@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CICOD Premium - Merged Design System Style Guide</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    /* --------------------------------------
+       Premium CICOD CSS Variables 
+       (Merged from Prototype + ECMS structure)
+    --------------------------------------- */
+    :root {
+      /* Base Colors (Paper Theme) */
+      --background: #F4F5F7;
+      --foreground: #0C1A2E;
+      
+      --card: #FFFFFF;
+      --card-foreground: #0C1A2E;
+      
+      --popover: #FFFFFF;
+      --popover-foreground: #0C1A2E;
+      
+      /* Signal (Primary) */
+      --primary: #F2A93B;
+      --primary-foreground: #0C1A2E;
+      
+      /* Ink (Secondary) */
+      --secondary: #12253F;
+      --secondary-foreground: #FFFFFF;
+      
+      /* Muted / Soft */
+      --muted: #E1E5EB;
+      --muted-foreground: #6B7787;
+      
+      /* Accent (Soft Signal) */
+      --accent: rgba(242,169,59,0.14);
+      --accent-foreground: #D98A15;
+      
+      /* Semantics */
+      --info: #3B82F6;
+      --info-foreground: #FFFFFF;
+      --success: #1F9D73;
+      --success-foreground: #FFFFFF;
+      --warning: #F59E0B;
+      --warning-foreground: #FFFFFF;
+      --destructive: #EF4444;
+      --destructive-foreground: #FFFFFF;
+      
+      /* Borders & Inputs */
+      --border: #E1E5EB;
+      --input: #D3D9E2;
+      --ring: #F2A93B;
+      
+      /* Sidebar (Ink Theme) */
+      --sidebar-background: #0C1A2E;
+      --sidebar-foreground: #EAF0F7;
+      --sidebar-primary: #F2A93B;
+      --sidebar-accent: rgba(255,255,255,0.05);
+      --sidebar-accent-foreground: #FFFFFF;
+      --sidebar-border: #1B3350;
+      
+      --radius: 12px;
+      
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-heading: 'Sora', sans-serif;
+    }
+
+    html.dark {
+      --background: #0C1A2E;
+      --foreground: #F4F5F7;
+      --card: #12253F;
+      --card-foreground: #FFFFFF;
+      --popover: #12253F;
+      --popover-foreground: #FFFFFF;
+      --primary: #F2A93B;
+      --primary-foreground: #0C1A2E;
+      --secondary: #1B3350;
+      --secondary-foreground: #FFFFFF;
+      --muted: #1B3350;
+      --muted-foreground: #9DB0C6;
+      --accent: rgba(242,169,59,0.14);
+      --accent-foreground: #F2A93B;
+      --border: #1B3350;
+      --input: #1B3350;
+      --ring: #F2A93B;
+      --sidebar-background: #081221;
+      --sidebar-foreground: #9DB0C6;
+      --sidebar-primary: #F2A93B;
+      --sidebar-accent: #12253F;
+      --sidebar-accent-foreground: #FFFFFF;
+      --sidebar-border: #12253F;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; }
+    body { font-family: var(--font-sans); background-color: var(--background); color: var(--foreground); line-height: 1.6; -webkit-font-smoothing: antialiased; transition: background-color 0.3s, color 0.3s; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+    
+    .section { margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+    .section:last-child { border-bottom: none; }
+
+    h1, h2, h3, h4, h5 { font-family: var(--font-heading); font-weight: 700; margin-bottom: 0.5em; color: var(--foreground); }
+    h1 { font-size: 2.4rem; margin-bottom: 20px; font-weight: 800; }
+    h2 { font-size: 1.8rem; margin-bottom: 24px; }
+    p { margin-bottom: 1rem; color: var(--muted-foreground); }
+
+    .theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 50; background: var(--primary); color: var(--primary-foreground); border: none; padding: 10px 16px; border-radius: calc(var(--radius) - 4px); cursor: pointer; font-weight: 600; font-family: var(--font-heading); display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    
+    .card { background: var(--card); color: var(--card-foreground); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+    .interactive-card { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease; }
+    .interactive-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -15px rgba(12, 26, 46, 0.15); border-color: var(--ring); }
+
+    .color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .swatch-color { height: 100px; width: 100%; border-radius: var(--radius) var(--radius) 0 0; }
+    .swatch-info { padding: 16px; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); background: var(--card); color: var(--foreground); }
+    .bg-primary { background-color: var(--primary); }
+    .bg-secondary { background-color: var(--secondary); border-top: 1px solid var(--border); }
+    .bg-accent { background-color: var(--accent); }
+    .bg-muted { background-color: var(--muted); }
+    .bg-success { background-color: var(--success); }
+    .bg-warning { background-color: var(--warning); }
+    .bg-info { background-color: var(--info); }
+    .bg-destructive { background-color: var(--destructive); }
+
+    .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } .gap-4 { gap: 1rem; } .gap-2 { gap: 0.5rem; } .flex-wrap { flex-wrap: wrap; } .mb-4 { margin-bottom: 1rem; }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0.6rem 1.2rem; font-size: 0.95rem; font-weight: 600; font-family: var(--font-heading); border-radius: calc(var(--radius) - 4px); border: 1px solid transparent; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+    .btn-secondary:hover { background: var(--primary); color: var(--primary-foreground); }
+    .btn-outline { background: transparent; color: var(--foreground); border-color: var(--border); }
+    .btn-outline:hover { background: var(--accent); color: var(--accent-foreground); border-color: var(--accent-foreground); }
+    .btn-ghost { background: transparent; color: var(--foreground); }
+    .btn-ghost:hover { background: var(--accent); color: var(--accent-foreground); }
+    .btn-destructive { background: var(--destructive); color: var(--destructive-foreground); }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; width: 100%; max-width: 400px; }
+    .label { font-size: 0.85rem; font-weight: 600; color: var(--foreground); }
+    .input { display: flex; height: 2.8rem; width: 100%; border-radius: calc(var(--radius) - 4px); border: 1.5px solid var(--input); background-color: var(--card); padding: 0.5rem 0.75rem; font-size: 0.95rem; color: var(--foreground); transition: border-color 0.2s; }
+    .input:focus { outline: none; border-color: var(--ring); }
+    
+    .custom-select { position: relative; width: 100%; user-select: none; }
+    .custom-select-trigger { display: flex; align-items: center; justify-content: space-between; height: 2.8rem; width: 100%; border-radius: calc(var(--radius) - 4px); border: 1.5px solid var(--input); background-color: var(--card); padding: 0.5rem 0.75rem; font-size: 0.95rem; color: var(--foreground); cursor: pointer; transition: border-color 0.2s; }
+    .custom-select:focus, .custom-select.open .custom-select-trigger { outline: none; border-color: var(--ring); box-shadow: 0 0 0 1px var(--ring); }
+    .custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; width: 100%; max-height: 200px; overflow-y: auto; background: var(--popover); border: 1px solid var(--border); border-radius: calc(var(--radius) - 4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 50; display: none; padding: 4px; }
+    .custom-select.open .custom-select-options { display: block; animation: select-in 0.15s ease-out; }
+    .custom-select-option { padding: 8px 12px; font-size: 0.95rem; color: var(--popover-foreground); cursor: pointer; border-radius: calc(var(--radius) - 6px); transition: background 0.15s; }
+    .custom-select-option:hover { background: var(--accent); color: var(--accent-foreground); }
+    .custom-select-option.selected { font-weight: 600; background: rgba(242,169,59,0.08); color: var(--primary); }
+    @keyframes select-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .field-underline { border: none; border-bottom: 1.5px solid var(--border); border-radius: 0; background: transparent; padding: 0.5rem 0; width: 100%; max-width: 400px; font-size: 0.95rem; color: var(--foreground); transition: border-color 0.2s; }
+    .field-underline:focus { outline: none; border-bottom: 2px solid var(--primary); }
+    .search-wrapper { position: relative; max-width: 400px; width: 100%; }
+    .search-input { padding-left: 2.5rem; border-radius: calc(var(--radius) - 4px); border: 1.5px solid var(--input); background: var(--card); height: 2.8rem; width: 100%; color: var(--foreground); }
+    .search-input:focus { outline: none; border-color: var(--ring); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground); width: 18px; }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .checkbox-group input[type="checkbox"], .checkbox-group input[type="radio"] { width: 1.1rem; height: 1.1rem; accent-color: var(--primary); cursor: pointer; }
+    .checkbox-group label { font-size: 0.9rem; color: var(--foreground); cursor: pointer; font-weight: 500; }
+
+    .table-container { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { padding: 18px 24px; font-weight: 600; font-family: var(--font-heading); font-size: 0.85rem; color: var(--muted-foreground); border-bottom: 1px solid var(--border); background: var(--background); text-transform: uppercase; }
+    td { padding: 18px 24px; font-size: 0.95rem; color: var(--foreground); border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background-color: var(--accent); }
+    
+    .pagination { display: inline-flex; align-items: center; gap: 4px; }
+    .page-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 8px; border-radius: calc(var(--radius) - 4px); font-size: 0.85rem; font-weight: 500; font-family: var(--font-heading); color: var(--foreground); border: 1px solid transparent; background: transparent; cursor: pointer; transition: all 0.2s; }
+    .page-btn:hover:not(:disabled) { background: var(--accent); color: var(--accent-foreground); }
+    .page-btn.active { border-color: var(--border); background: var(--card); box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-weight: 700; color: var(--primary); }
+    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .page-dots { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; color: var(--muted-foreground); }
+
+    .badge { display: inline-flex; align-items: center; padding: 4px 12px; font-size: 0.72rem; font-weight: 700; font-family: var(--font-heading); border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.02em; }
+    .badge-primary { background: var(--primary); color: var(--primary-foreground); }
+    .badge-success { background: rgba(31,157,115,.12); color: var(--success); }
+    .badge-warning { background: rgba(245,158,11,.12); color: var(--warning); }
+    .badge-destructive { background: rgba(239,68,68,.12); color: var(--destructive); }
+    .badge-info { background: rgba(59,130,246,.12); color: var(--info); }
+    .badge-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+
+    .loader { width: 24px; height: 24px; border: 3px solid var(--muted); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .skeleton { background: linear-gradient(90deg, var(--muted), var(--card), var(--muted)); background-size: 200% 100%; animation: skeleton-load 1.5s infinite linear; border-radius: calc(var(--radius) - 4px); }
+    @keyframes skeleton-load { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+    /* Dual Sidebar Layout Mockup */
+    .layout-mock { display: flex; height: 550px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 30px -15px rgba(12, 26, 46, 0.2); }
+    
+    .sidebar-global-mock { width: 72px; background-color: #12253F; border-right: 1px solid #1B3350; display: flex; flex-direction: column; align-items: center; padding: 16px 0; z-index: 10; }
+    .hub-menu-btn-mock { color: #9DB0C6; margin-bottom: 24px; cursor: pointer; transition: color .2s; }
+    .hub-menu-btn-mock:hover { color: #fff; }
+    
+    .hub-app-mock { display: flex; flex-direction: column; align-items: center; gap: 6px; color: #9DB0C6; text-decoration: none; margin-bottom: 24px; cursor: pointer; width: 100%; transition: color .2s; }
+    .hub-app-mock:hover { color: #fff; }
+    .hub-app-mock.active { color: var(--primary); }
+    
+    .hub-icon-mock { width: 38px; height: 38px; background-color: #1B3350; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+    .hub-app-mock:hover .hub-icon-mock { background-color: rgba(255,255,255,0.1); }
+    .hub-app-mock.active .hub-icon-mock { background-color: rgba(242,169,59,.14); border: 1px solid #D98A15; }
+    .hub-app-mock span { font-size: 0.65rem; font-weight: 500; text-align: center; }
+
+    .sidebar-context-mock { width: 250px; background-color: var(--sidebar-background); color: var(--sidebar-foreground); border-right: 1px solid var(--sidebar-border); display: flex; flex-direction: column; }
+    .brand-mock { height: 70px; padding: 0 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--sidebar-border); }
+    .brand-mock .mark { font-family: var(--font-heading); font-weight: 800; font-size: 1.15rem; color: #fff; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; }
+    
+    .nav-list-mock { padding: 16px 12px; list-style: none; flex: 1; overflow-y: auto; }
+    .nav-section-title-mock { font-family: var(--font-sans); font-size: 0.75rem; color: #6B7787; padding: 16px 12px 8px; margin-top: 8px; }
+    .nav-item-mock { margin-bottom: 4px; }
+    .nav-link-mock { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; color: #9DB0C6; text-decoration: none; font-weight: 500; font-size: 0.92rem; transition: all 0.2s ease; cursor: pointer; }
+    .nav-link-mock:hover { background-color: rgba(255, 255, 255, 0.05); color: #fff; }
+    .nav-link-mock.active { background-color: rgba(242,169,59,.14); color: var(--primary); font-family: var(--font-heading); font-weight: 600; }
+    
+    .nav-link-left-mock { display: flex; align-items: center; gap: 12px; }
+    .nav-link-left-mock svg { width: 18px; height: 18px; }
+    
+    .nav-sublist-mock { list-style: none; padding-left: 42px; margin-top: 6px; margin-bottom: 10px; }
+    .nav-sublist-mock li a { color: #9DB0C6; text-decoration: none; font-size: 0.88rem; padding: 6px 0; display: block; transition: color 0.2s; }
+    .nav-sublist-mock li a:hover { color: #fff; }
+    .nav-sublist-mock li a.active { color: var(--primary); font-weight: 600; font-family: var(--font-heading); }
+    
+    .mock-main { flex: 1; display: flex; flex-direction: column; background: var(--background); }
+    .mock-header { height: 70px; background: var(--card); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; }
+    .mock-body { padding: 32px; flex: 1; overflow-y: auto; }
+
+    .tabs-list { display: inline-flex; background: var(--muted); padding: 6px; border-radius: calc(var(--radius) - 2px); gap: 4px; margin-bottom: 16px; }
+    .tabs-trigger { padding: 8px 20px; border-radius: calc(var(--radius) - 4px); font-size: 0.9rem; font-weight: 600; font-family: var(--font-heading); cursor: pointer; color: var(--muted-foreground); transition: all 0.2s; }
+    .tabs-trigger.active { background: var(--card); color: var(--foreground); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    
+    .alert { display: flex; gap: 16px; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--card); margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+    .alert-destructive { border-color: rgba(239,68,68,.3); color: var(--destructive); background: rgba(239,68,68,.02); }
+    .alert-destructive .alert-icon { color: var(--destructive); }
+    .alert-title { font-weight: 700; font-family: var(--font-heading); margin-bottom: 4px; font-size: 1rem; color: var(--foreground); }
+    .alert-destructive .alert-title { color: var(--destructive); }
+    .alert-desc { font-size: 0.9rem; color: var(--muted-foreground); }
+    
+    .avatar { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: var(--muted); display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: var(--font-heading); font-size: 0.95rem; color: var(--muted-foreground); border: 2px solid var(--card); }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .switch { position: relative; width: 48px; height: 26px; background: var(--input); border-radius: 9999px; cursor: pointer; transition: background 0.2s; }
+    .switch.on { background: var(--primary); }
+    .switch-thumb { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #FFF; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .switch.on .switch-thumb { transform: translateX(22px); }
+  </style>
+</head>
+<body>
+
+  <button class="theme-toggle" onclick="document.documentElement.classList.toggle('dark')">
+    <i data-feather="moon"></i> Toggle Dark Mode
+  </button>
+
+  <div class="container">
+    
+    <h1>CICOD Premium Style Guide</h1>
+    <p>This merges the layout principles of the ECMS system with the premium design tokens (Ink & Signal) from the Prototype.</p>
+
+    <!-- 1. COLORS -->
+    <div class="section">
+      <h2>1. Brand Colors</h2>
+      <div class="color-grid">
+        <div><div class="swatch-color bg-primary"></div><div class="swatch-info"><h4>Signal</h4><code>var(--primary)</code></div></div>
+        <div><div class="swatch-color bg-secondary"></div><div class="swatch-info"><h4>Ink</h4><code>var(--secondary)</code></div></div>
+        <div><div class="swatch-color bg-accent"></div><div class="swatch-info"><h4>Signal Soft</h4><code>var(--accent)</code></div></div>
+        <div><div class="swatch-color bg-muted"></div><div class="swatch-info"><h4>Line / Mute</h4><code>var(--muted)</code></div></div>
+        <div><div class="swatch-color bg-success"></div><div class="swatch-info"><h4>OK</h4><code>var(--success)</code></div></div>
+        <div><div class="swatch-color bg-warning"></div><div class="swatch-info"><h4>Warning</h4><code>var(--warning)</code></div></div>
+        <div><div class="swatch-color bg-info"></div><div class="swatch-info"><h4>Info</h4><code>var(--info)</code></div></div>
+        <div><div class="swatch-color bg-destructive"></div><div class="swatch-info"><h4>Destructive</h4><code>var(--destructive)</code></div></div>
+      </div>
+    </div>
+
+    <!-- TYPOGRAPHY -->
+    <div class="section">
+      <h2>Typography</h2>
+      <p style="margin-bottom: 24px;">The premium system uses a dual-font architecture: <strong>Sora</strong> for display, headings, and bold accents, and <strong>Inter</strong> for highly legible body copy and data tables.</p>
+      
+      <div class="flex flex-wrap gap-4" style="align-items: flex-start;">
+        
+        <div class="card" style="flex:1; min-width:300px;">
+          <div style="margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted-foreground); margin-bottom:8px;">Headings & Display</div>
+            <div style="font-family:var(--font-heading); font-weight:800; font-size:1.8rem; color:var(--foreground);">Sora Font</div>
+          </div>
+          
+          <h1 style="margin-bottom:12px;">Heading H1 <span style="font-size:0.8rem; color:var(--muted-foreground); font-weight:500; font-family:var(--font-sans);">2.4rem / 800 Wght</span></h1>
+          <h2 style="margin-bottom:12px;">Heading H2 <span style="font-size:0.8rem; color:var(--muted-foreground); font-weight:500; font-family:var(--font-sans);">1.8rem / 700 Wght</span></h2>
+          <h3 style="margin-bottom:12px; font-size:1.4rem;">Heading H3 <span style="font-size:0.8rem; color:var(--muted-foreground); font-weight:500; font-family:var(--font-sans);">1.4rem / 700 Wght</span></h3>
+          <h4 style="margin-bottom:12px; font-size:1.1rem;">Heading H4 <span style="font-size:0.8rem; color:var(--muted-foreground); font-weight:500; font-family:var(--font-sans);">1.1rem / 600 Wght</span></h4>
+          <h5 style="margin-bottom:0; font-size:0.95rem;">Heading H5 <span style="font-size:0.8rem; color:var(--muted-foreground); font-weight:500; font-family:var(--font-sans);">0.95rem / 600 Wght</span></h5>
+        </div>
+
+        <div class="card" style="flex:1; min-width:300px;">
+          <div style="margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted-foreground); margin-bottom:8px;">Body & Interface</div>
+            <div style="font-family:var(--font-sans); font-weight:600; font-size:1.8rem; color:var(--foreground);">Inter Font</div>
+          </div>
+          
+          <div style="margin-bottom:16px;">
+            <div style="font-size:1rem; color:var(--foreground); margin-bottom:4px;">Body Regular (15px / 400 Wght)</div>
+            <p style="color:var(--muted-foreground); margin:0;">The quick brown fox jumps over the lazy dog. Used for general descriptions, paragraphs, and long-form content.</p>
+          </div>
+          
+          <div style="margin-bottom:16px;">
+            <div style="font-size:0.95rem; font-weight:500; color:var(--foreground); margin-bottom:4px;">Medium Text (0.95rem / 500 Wght)</div>
+            <p style="color:var(--muted-foreground); margin:0; font-size:0.95rem; font-weight:500;">Used for interface elements like tabs, buttons, and navigation links.</p>
+          </div>
+
+          <div>
+            <div style="font-size:0.85rem; font-weight:600; color:var(--foreground); margin-bottom:4px;">Small Bold Text (0.85rem / 600 Wght)</div>
+            <p style="color:var(--muted-foreground); margin:0; font-size:0.85rem;">Used for table headers, small labels, and metadata captions.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 2. BUTTONS -->
+    <div class="section">
+      <h2>2. Buttons & CTAs</h2>
+      <div class="flex flex-wrap gap-4 mb-4">
+        <button class="btn btn-primary">Primary Action</button>
+        <button class="btn btn-secondary">Secondary Action</button>
+        <button class="btn btn-outline">Outline Button</button>
+        <button class="btn btn-ghost">Ghost Button</button>
+        <button class="btn btn-destructive">Delete Action</button>
+      </div>
+      <div class="flex flex-wrap gap-4">
+        <button class="btn btn-primary"><i data-feather="plus" style="width:16px;"></i> Create New</button>
+        <button class="btn btn-outline"><i data-feather="download" style="width:16px;"></i> Export</button>
+        <button class="btn btn-ghost"><i data-feather="more-horizontal"></i></button>
+      </div>
+    </div>
+
+    <!-- 3. FORMS & INPUTS -->
+    <div class="section">
+      <h2>3. Forms & Search</h2>
+      <div class="flex flex-wrap gap-4" style="align-items: flex-start;">
+        <div style="flex:1; min-width:300px;">
+          <div class="form-group">
+            <label class="label">Email Address</label>
+            <input type="email" class="input" placeholder="name@cicod.com">
+          </div>
+          <div class="form-group">
+            <label class="label">Role (Select)</label>
+            <div class="custom-select" tabindex="0" onclick="this.classList.toggle('open')" onblur="setTimeout(() => this.classList.remove('open'), 200)">
+              <div class="custom-select-trigger">
+                <span>Admin</span>
+                <i data-feather="chevron-down" style="width:16px; color:var(--muted-foreground);"></i>
+              </div>
+              <div class="custom-select-options">
+                <div class="custom-select-option selected" onclick="this.parentElement.previousElementSibling.querySelector('span').innerText = this.innerText; Array.from(this.parentElement.children).forEach(c => c.classList.remove('selected')); this.classList.add('selected');">Admin</div>
+                <div class="custom-select-option" onclick="this.parentElement.previousElementSibling.querySelector('span').innerText = this.innerText; Array.from(this.parentElement.children).forEach(c => c.classList.remove('selected')); this.classList.add('selected');">User</div>
+                <div class="custom-select-option" onclick="this.parentElement.previousElementSibling.querySelector('span').innerText = this.innerText; Array.from(this.parentElement.children).forEach(c => c.classList.remove('selected')); this.classList.add('selected');">Guest</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="label">Memo Title (Underline style)</label>
+            <input type="text" class="field-underline" placeholder="Start typing...">
+          </div>
+        </div>
+
+        <div style="flex:1; min-width:300px;">
+          <div class="form-group">
+            <label class="label">Global Search</label>
+            <div class="search-wrapper">
+              <i data-feather="search" class="search-icon"></i>
+              <input type="text" class="search-input" placeholder="Search by name, ID...">
+            </div>
+          </div>
+          <div class="form-group mt-4" style="margin-top:20px;">
+            <label class="label" style="margin-bottom:8px;">Permissions</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="c1" checked> <label for="c1">Read Access</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="c2"> <label for="c2">Write Access</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. BADGES & UI ICONS -->
+    <div class="section">
+      <h2>4. Badges & Icons</h2>
+      <div class="flex flex-wrap gap-4 mb-4 items-center">
+        <span class="badge badge-primary">New Feature</span>
+        <span class="badge badge-success">Completed</span>
+        <span class="badge badge-warning">Pending Review</span>
+        <span class="badge badge-destructive">Failed</span>
+        <span class="badge badge-info">In Progress</span>
+        <span class="badge badge-secondary">Draft</span>
+      </div>
+      <p>System uses <strong>Feather Icons</strong> (consistent line-weight, perfect for enterprise tools):</p>
+      <div class="flex gap-4 items-center" style="color: var(--foreground);">
+        <i data-feather="users"></i>
+        <i data-feather="settings"></i>
+        <i data-feather="bell"></i>
+        <i data-feather="file-text"></i>
+        <i data-feather="shield"></i>
+        <i data-feather="pie-chart"></i>
+        <i data-feather="mail"></i>
+        <i data-feather="calendar"></i>
+      </div>
+    </div>
+
+    <!-- 5. TABLES -->
+    <div class="section">
+      <h2>5. Data Tables</h2>
+      <div class="table-container interactive-card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Number</th>
+              <th>Customer Name</th>
+              <th>Status</th>
+              <th>Date Assigned</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="font-family:monospace; color:var(--muted-foreground);">#CMD-832</span></td>
+              <td style="font-weight:600;">Obiora Lebechukwu</td>
+              <td><span class="badge badge-success">Active</span></td>
+              <td>Oct 05, 2026</td>
+              <td><button class="btn btn-ghost" style="padding:4px;"><i data-feather="edit-2" style="width:16px;"></i></button></td>
+            </tr>
+            <tr>
+              <td><span style="font-family:monospace; color:var(--muted-foreground);">#CMD-831</span></td>
+              <td style="font-weight:600;">Prince Ekpenyong</td>
+              <td><span class="badge badge-warning">Pending</span></td>
+              <td>Oct 04, 2026</td>
+              <td><button class="btn btn-ghost" style="padding:4px;"><i data-feather="edit-2" style="width:16px;"></i></button></td>
+            </tr>
+            <tr>
+              <td><span style="font-family:monospace; color:var(--muted-foreground);">#CMD-830</span></td>
+              <td style="font-weight:600;">AgriCorp Solutions</td>
+              <td><span class="badge badge-destructive">Suspended</span></td>
+              <td>Oct 01, 2026</td>
+              <td><button class="btn btn-ghost" style="padding:4px;"><i data-feather="edit-2" style="width:16px;"></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 6. LOADERS & SKELETONS -->
+    <div class="section">
+      <h2>6. Loaders & States</h2>
+      <div class="flex gap-4 items-center mb-4">
+        <div class="loader"></div>
+        <span style="color: var(--muted-foreground); font-size:0.9rem;">Processing request...</span>
+      </div>
+      <div class="card" style="max-width: 400px;">
+        <div class="skeleton mb-2" style="height: 24px; width: 60%;"></div>
+        <div class="skeleton mb-2" style="height: 16px; width: 100%;"></div>
+        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+      </div>
+    </div>
+
+    <!-- 7. LAYOUT MOCKUP (DUAL SIDEBAR) -->
+    <div class="section">
+      <h2>7. Dual Sidebar Architecture</h2>
+      <div class="layout-mock interactive-card">
+        
+        <!-- 1. Global Hub Sidebar -->
+        <div class="sidebar-global-mock">
+          <div class="hub-menu-btn-mock"><i data-feather="menu"></i></div>
+          <a href="#" class="hub-app-mock">
+            <div class="hub-icon-mock"><i data-feather="activity" style="width:18px;"></i></div>
+            <span>Asset...</span>
+          </a>
+          <a href="#" class="hub-app-mock">
+            <div class="hub-icon-mock"><i data-feather="hard-drive" style="width:18px;"></i></div>
+            <span>Gov Dri...</span>
+          </a>
+          <a href="#" class="hub-app-mock active">
+            <div class="hub-icon-mock"><i data-feather="users" style="width:18px; color:var(--primary);"></i></div>
+            <span>CRM</span>
+          </a>
+          <a href="#" class="hub-app-mock">
+            <div class="hub-icon-mock"><i data-feather="monitor" style="width:18px;"></i></div>
+            <span>Gov P...</span>
+          </a>
+        </div>
+
+        <!-- 2. Context Sidebar -->
+        <div class="sidebar-context-mock">
+          <div class="brand-mock">
+            <span class="mark">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              CICOD CRM
+            </span>
+          </div>
+          
+          <ul class="nav-list-mock">
+            <li class="nav-item-mock">
+              <a class="nav-link-mock active">
+                <div class="nav-link-left-mock">
+                  <i data-feather="users"></i> Customer Management
+                </div>
+                <i data-feather="chevron-down" style="width:16px;"></i>
+              </a>
+              <ul class="nav-sublist-mock">
+                <li><a href="#" class="active">Manage Customers</a></li>
+                <li><a href="#">Segments</a></li>
+              </ul>
+            </li>
+            
+            <li class="nav-item-mock">
+              <a class="nav-link-mock">
+                <div class="nav-link-left-mock">
+                  <i data-feather="tool"></i> Service Config
+                </div>
+                <i data-feather="chevron-right" style="width:16px;"></i>
+              </a>
+            </li>
+            
+            <li class="nav-item-mock">
+              <a class="nav-link-mock">
+                <div class="nav-link-left-mock">
+                  <i data-feather="layers"></i> Product Mgt
+                </div>
+                <i data-feather="chevron-right" style="width:16px;"></i>
+              </a>
+            </li>
+            
+            <div class="nav-section-title-mock">Settings & Support</div>
+            <li class="nav-item-mock">
+              <a class="nav-link-mock">
+                <div class="nav-link-left-mock">
+                  <i data-feather="settings"></i> System Settings
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 3. Main Content Area -->
+        <div class="mock-main">
+          <div class="mock-header">
+            <div class="search-wrapper" style="max-width: 250px;">
+              <i data-feather="search" class="search-icon" style="width:14px;"></i>
+              <input type="text" class="search-input" style="height: 2rem; font-size:0.85rem; padding-left: 2rem;" placeholder="Search...">
+            </div>
+            <div style="display:flex; gap:12px; align-items:center;">
+              <i data-feather="bell" style="width:18px; color:var(--muted-foreground);"></i>
+              <div class="skeleton" style="height:32px; width:32px; border-radius:50%;"></div>
+            </div>
+          </div>
+          <div class="mock-body">
+            <div class="card" style="height: 100%;">
+              <h4 style="margin-bottom:12px;">Dashboard Widget</h4>
+              <div class="skeleton" style="height:80px; width:100%; margin-bottom:12px;"></div>
+              <div class="skeleton" style="height:80px; width:100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. TABS & NAVIGATION -->
+    <div class="section">
+      <h2>8. Tabs & Navigation</h2>
+      <div class="tabs-list">
+        <div class="tabs-trigger active">Account Details</div>
+        <div class="tabs-trigger">Billing</div>
+        <div class="tabs-trigger">Integrations</div>
+      </div>
+      <div class="card interactive-card">
+        <h4 style="margin-bottom:8px;">Account Details Content</h4>
+        <p>This panel shows the active tab content. Notice the soft shadow and background change on the active tab trigger above.</p>
+      </div>
+    </div>
+
+    <!-- 9. ALERTS & CALLOUTS -->
+    <div class="section">
+      <h2>9. Alerts & Callouts</h2>
+      <div class="alert">
+        <i data-feather="info" style="color:var(--foreground); width:20px;"></i>
+        <div>
+          <div class="alert-title">System Update Available</div>
+          <div class="alert-desc">A new version of the ECMS has been deployed. Please refresh your browser.</div>
+        </div>
+      </div>
+      
+      <div class="alert alert-destructive">
+        <i data-feather="alert-circle" class="alert-icon" style="width:20px;"></i>
+        <div>
+          <div class="alert-title">Payment Failed</div>
+          <div class="alert-desc" style="color:var(--destructive);">The credit card on file has expired. Please update your billing information immediately to avoid suspension.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. AVATARS & SWITCHES -->
+    <div class="section">
+      <h2>10. Avatars & Switches</h2>
+      
+      <div class="flex flex-wrap gap-4 mb-4 items-center">
+        <div class="avatar"><img src="https://i.pravatar.cc/150?u=1" alt="User"></div>
+        <div class="avatar"><img src="https://i.pravatar.cc/150?u=2" alt="User"></div>
+        <div class="avatar">JS</div>
+        <div class="avatar" style="background:var(--accent); color:var(--primary);">AD</div>
+        <div style="margin-left:16px;">
+          <h4 style="margin:0; font-size:0.95rem;">Jane Smith</h4>
+          <span style="font-size:0.8rem; color:var(--muted-foreground);">jane.smith@cicod.com</span>
+        </div>
+      </div>
+
+      <div class="card mt-4" style="max-width:400px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <h4 style="margin:0; font-size:0.95rem;">Enable Notifications</h4>
+          <span style="font-size:0.8rem; color:var(--muted-foreground);">Receive email alerts for workflow updates.</span>
+        </div>
+        <div class="switch on" onclick="this.classList.toggle('on')">
+          <div class="switch-thumb"></div>
+        </div>
+      </div>
+      
+      <div class="card mt-4" style="max-width:400px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <h4 style="margin:0; font-size:0.95rem;">Marketing Emails</h4>
+          <span style="font-size:0.8rem; color:var(--muted-foreground);">Receive promotional materials.</span>
+        </div>
+        <div class="switch" onclick="this.classList.toggle('on')">
+          <div class="switch-thumb"></div>
+        </div>
+      </div>
+    <!-- 11. MODALS & DIALOGS -->
+    <div class="section">
+      <h2>11. Modals & Dialogs</h2>
+      <p style="margin-bottom: 24px;">Dialogs interrupt the user with important content and expect a response. The background overlay dims the rest of the application to focus attention.</p>
+      
+      <!-- Static Modal Demo (Inline) -->
+      <div style="position: relative; height: 500px; background: url('data:image/svg+xml;utf8,<svg width=\'20\' height=\'20\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'2\' cy=\'2\' r=\'2\' fill=\'%23E1E5EB\'/></svg>') repeat; border-radius: var(--radius); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+        
+        <!-- Overlay -->
+        <div style="position: absolute; inset: 0; background: rgba(12, 26, 46, 0.6); backdrop-filter: blur(4px);"></div>
+        
+        <!-- Modal Card -->
+        <div style="position: relative; width: 450px; background: var(--card); border-radius: calc(var(--radius) + 4px); box-shadow: 0 25px 50px -12px rgba(12, 26, 46, 0.3); border: 1px solid var(--border); overflow: hidden; z-index: 10; animation: modal-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+          
+          <div style="padding: 24px 24px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <h3 style="margin: 0; font-size: 1.25rem; font-family: var(--font-heading); color: var(--foreground);">Create New Customer</h3>
+              <p style="margin: 4px 0 0; font-size: 0.9rem; color: var(--muted-foreground);">Enter the company details and assign a primary contact.</p>
+            </div>
+            <button style="background: transparent; border: none; padding: 4px; cursor: pointer; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: background 0.2s, color 0.2s;" onmouseover="this.style.background='var(--accent)'; this.style.color='var(--accent-foreground)';" onmouseout="this.style.background='transparent'; this.style.color='var(--muted-foreground)';">
+              <i data-feather="x" style="width: 20px;"></i>
+            </button>
+          </div>
+          
+          <div style="padding: 24px;">
+            <div class="form-group" style="max-width: 100%;">
+              <label class="label">Company Name</label>
+              <input type="text" class="input" placeholder="e.g. Acme Corporation">
+            </div>
+            <div class="form-group" style="max-width: 100%; margin-bottom: 0;">
+              <label class="label">Primary Email</label>
+              <input type="email" class="input" placeholder="admin@acmecorp.com">
+            </div>
+          </div>
+          
+          <div style="padding: 16px 24px; border-top: 1px solid var(--border); background: var(--background); display: flex; justify-content: flex-end; gap: 12px;">
+            <button class="btn btn-outline">Cancel</button>
+            <button class="btn btn-primary">Save Customer</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="container" style="padding-top: 0;">
+    <!-- 12. PAGINATION -->
+    <div class="section">
+      <h2>12. Pagination</h2>
+      <p style="margin-bottom: 24px;">Used for data tables and list views. Employs ghost buttons for inactive states and card styling for the active page.</p>
+      
+      <div class="card interactive-card" style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.85rem; color: var(--muted-foreground);">Showing 1 to 10 of 97 results</span>
+        <div class="pagination">
+          <button class="page-btn" disabled><i data-feather="chevron-left" style="width: 16px;"></i> Prev</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span class="page-dots">...</span>
+          <button class="page-btn">10</button>
+          <button class="page-btn">Next <i data-feather="chevron-right" style="width: 16px;"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes modal-in {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+  <script>feather.replace();</script>
+</body>
+</html>

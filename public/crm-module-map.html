@@ -1,0 +1,589 @@
+<title>CICOD CRM Module Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a two-column "before → after" sidebar map with connectors, then one filterable change register below it. Uses the CICOD CRM palette (navy + amber) and its Sora/Inter type. */
+:root {
+  --bg: #F4F5F8; --surface: #FFFFFF; --surface-2: #F8F9FB; --fg: #0E1B33; --muted: #5B6578; --faint: #8A93A3;
+  --line: #E3E6EC; --line-strong: #CDD2DB; --accent: #E8971F; --accent-soft: #FDF1DE; --navy: #13264A;
+  --t-rebuilt: #D97706; --t-rebuilt-bg: #FEF3E2;
+  --t-moved: #2563EB; --t-moved-bg: #E8EFFD;
+  --t-merged: #7C3AED; --t-merged-bg: #F1EAFE;
+  --t-removed: #C2410C; --t-removed-bg: #FDECE4;
+  --t-kept: #64748B; --t-kept-bg: #EEF1F5;
+  --t-new: #15803D; --t-new-bg: #E5F5EA;
+  --shadow: 0 1px 2px rgba(14,27,51,.06), 0 4px 16px rgba(14,27,51,.05);
+  --display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0B1426; --surface: #111D35; --surface-2: #0F1A30; --fg: #E8ECF4; --muted: #A3ADC0; --faint: #7C879C;
+  --line: #22304D; --line-strong: #2F3F60; --accent: #F2A93B; --accent-soft: #2A2416; --navy: #C9D6F2;
+  --t-rebuilt: #F5A623; --t-rebuilt-bg: #33260F; --t-moved: #6EA0FF; --t-moved-bg: #16264A;
+  --t-merged: #B18CFF; --t-merged-bg: #261C45; --t-removed: #FB8B5F; --t-removed-bg: #3A1D12;
+  --t-kept: #A3B0C4; --t-kept-bg: #1D2943; --t-new: #4ADE80; --t-new-bg: #12301E;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0B1426; --surface: #111D35; --surface-2: #0F1A30; --fg: #E8ECF4; --muted: #A3ADC0; --faint: #7C879C;
+  --line: #22304D; --line-strong: #2F3F60; --accent: #F2A93B; --accent-soft: #2A2416; --navy: #C9D6F2;
+  --t-rebuilt: #F5A623; --t-rebuilt-bg: #33260F; --t-moved: #6EA0FF; --t-moved-bg: #16264A;
+  --t-merged: #B18CFF; --t-merged-bg: #261C45; --t-removed: #FB8B5F; --t-removed-bg: #3A1D12;
+  --t-kept: #A3B0C4; --t-kept-bg: #1D2943; --t-new: #4ADE80; --t-new-bg: #12301E;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); margin: 0; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 36px 64px; display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -.01em; }
+h1 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 800; }
+h2 { font-size: 1.3rem; font-weight: 700; }
+h3 { font-size: 1rem; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font: 600 .72rem/1 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.lede { color: var(--muted); max-width: 70ch; }
+.mono { font-family: var(--mono); font-size: .8em; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* header */
+header { display: flex; flex-direction: column; gap: 14px; }
+.stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 128px; }
+.stat b { font: 800 1.5rem/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.stat span { font-size: .78rem; color: var(--muted); }
+.stat.hero { background: var(--navy); border-color: var(--navy); color: var(--bg); }
+.stat.hero span { color: color-mix(in srgb, var(--bg) 75%, transparent); }
+
+/* type chips */
+.legend { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px 5px 10px; font-size: .82rem; font-weight: 600; cursor: pointer; }
+.chip[aria-pressed="false"] { opacity: .45; }
+.chip .n { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 500; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--c); }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font: 700 .7rem/1.3 var(--body); letter-spacing: .05em; text-transform: uppercase; color: var(--c); background: var(--cb); white-space: nowrap; }
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+[data-t="rebuilt"] { --c: var(--t-rebuilt); --cb: var(--t-rebuilt-bg); }
+[data-t="moved"] { --c: var(--t-moved); --cb: var(--t-moved-bg); }
+[data-t="merged"] { --c: var(--t-merged); --cb: var(--t-merged-bg); }
+[data-t="removed"] { --c: var(--t-removed); --cb: var(--t-removed-bg); }
+[data-t="kept"] { --c: var(--t-kept); --cb: var(--t-kept-bg); }
+[data-t="new"] { --c: var(--t-new); --cb: var(--t-new-bg); }
+
+/* map */
+.section-head { display: flex; flex-direction: column; gap: 6px; }
+.map-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.map { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(90px, .55fr) minmax(0, 1fr); }
+.map svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.col { display: flex; flex-direction: column; gap: 14px; min-width: 0; position: relative; z-index: 1; }
+.col-title { font: 700 .78rem/1 var(--display); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.grp { display: flex; flex-direction: column; gap: 3px; }
+.grp-name { font: 600 .7rem/1 var(--body); letter-spacing: .09em; text-transform: uppercase; color: var(--faint); padding: 6px 0 4px; }
+.sub { font-size: .76rem; color: var(--muted); font-weight: 600; padding: 4px 0 1px 2px; }
+.node { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid transparent; background: transparent; border-radius: 8px; padding: 5px 8px; font-size: .86rem; cursor: pointer; line-height: 1.3; transition: background .15s, border-color .15s, opacity .15s; }
+.node:hover { background: var(--surface-2); border-color: var(--line); }
+.node .lbl { min-width: 0; overflow-wrap: anywhere; }
+.node .tail { margin-left: auto; font-size: .7rem; color: var(--faint); white-space: nowrap; }
+.node.indent { padding-left: 20px; }
+.node.on { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, transparent); font-weight: 600; }
+.node.dim { opacity: .32; }
+.right .node .dot { background: var(--line-strong); }
+.right .node.on .dot { background: var(--accent); }
+.right .node.isnew .dot { background: var(--t-new); }
+.mid-label { align-self: start; justify-self: center; font: 600 .72rem/1.3 var(--body); color: var(--faint); text-align: center; padding-top: 2px; }
+.map-hint { font-size: .82rem; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.linkbtn { background: none; border: 0; color: var(--accent); font-weight: 600; cursor: pointer; padding: 0; }
+.detail { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.detail[hidden] { display: none; }
+.detail .why { max-width: none; }
+
+/* register */
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+input[type="search"], select { font: inherit; font-size: .88rem; color: var(--fg); background: var(--surface); border: 1.5px solid var(--line-strong); border-radius: 9px; padding: 8px 11px; min-width: 0; }
+input[type="search"] { width: min(320px, 100%); }
+.count { font-size: .84rem; color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+table { border-collapse: collapse; width: 100%; min-width: 980px; font-size: .86rem; }
+th { text-align: left; font: 700 .7rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); padding: 12px 14px; border-bottom: 1px solid var(--line); position: sticky; top: 0; }
+td { padding: 14px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+tr:last-child td { border-bottom: 0; }
+tr.flash td { animation: flash 1.6s ease-out; }
+@keyframes flash { from { background: var(--accent-soft); } to { background: transparent; } }
+.sec-row td { background: var(--surface-2); font: 700 .78rem/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--navy); padding: 10px 14px; }
+.page-name { font-weight: 700; }
+.path { color: var(--faint); display: block; margin-top: 2px; overflow-wrap: anywhere; }
+.crumb { font-weight: 600; color: var(--fg); }
+.crumb .sep { color: var(--faint); margin: 0 4px; font-weight: 400; }
+.why { color: var(--muted); max-width: 42ch; }
+.look { max-width: 40ch; }
+.shot { display: block; margin-top: 8px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; width: 168px; padding: 0; background: var(--surface-2); cursor: zoom-in; }
+.shot img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; }
+.none { color: var(--faint); font-style: italic; }
+
+/* new + global */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card .where { font-size: .8rem; color: var(--muted); }
+.card p { font-size: .88rem; color: var(--muted); }
+.card .shot { width: 100%; }
+.rules { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px 24px; padding: 0; margin: 0; list-style: none; }
+.rules li { display: grid; grid-template-columns: auto 1fr; gap: 10px; font-size: .9rem; }
+.rules li::before { content: "→"; color: var(--accent); font-weight: 700; }
+.rules b { font-weight: 600; }
+
+dialog { border: 0; padding: 0; border-radius: 14px; background: var(--surface); color: var(--fg); max-width: min(1200px, 94vw); box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+dialog::backdrop { background: rgba(8,14,28,.72); }
+dialog figure { margin: 0; display: flex; flex-direction: column; }
+dialog img { display: block; width: 100%; max-height: 80vh; object-fit: contain; background: var(--surface-2); }
+dialog figcaption { padding: 12px 16px; display: flex; justify-content: space-between; gap: 12px; align-items: center; font-size: .88rem; }
+.close { border: 1px solid var(--line-strong); background: var(--surface-2); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 600; }
+footer { font-size: .8rem; color: var(--faint); }
+
+@media (max-width: 760px) {
+  .map { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .map svg, .mid-label { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">internal.cicod.com/crm → new CRM prototype</span>
+    <h1>Where every legacy CRM page went</h1>
+    <p class="lede">Every page in the old CRM sidebar, matched to its place in the new design: what happened to it, why, and what it looks like now. Click any item on either side of the map to trace it, or use the table to filter and search.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="section-head" aria-labelledby="map-h">
+    <h2 id="map-h">The two sidebars, side by side</h2>
+    <p class="lede">Left: the legacy menu (7 sections, 3 levels deep in places). Right: the new menu (4 sections, at most 2 levels). Lines join each old page to where it lives now.</p>
+  </section>
+  <div class="map-card">
+    <div class="legend" id="legend" role="group" aria-label="Filter by type of change"></div>
+    <div class="map" id="map">
+      <svg id="wires" aria-hidden="true"></svg>
+      <div class="col left" id="left"><div class="col-title"><span>Legacy CRM</span><span id="leftCount"></span></div></div>
+      <div class="mid-label" aria-hidden="true">moved to</div>
+      <div class="col right" id="right"><div class="col-title"><span>New CRM</span><span id="rightCount"></span></div></div>
+    </div>
+    <div class="map-hint"><span id="hint">Nothing selected. Click a page on either side.</span><button class="linkbtn" id="clear" hidden>Clear selection</button></div>
+    <div class="detail" id="detail" hidden></div>
+  </div>
+
+  <section class="section-head" aria-labelledby="reg-h">
+    <h2 id="reg-h">Change register</h2>
+    <p class="lede">One row per legacy page or screen. Thumbnails are from the new prototype (mock data); click one to enlarge.</p>
+  </section>
+  <div class="toolbar">
+    <div class="field"><label for="q">Search</label><input type="search" id="q" placeholder="Page, route or reason"></div>
+    <div class="field"><label for="sec">Legacy section</label><select id="sec"><option value="">All sections</option></select></div>
+    <div class="field"><label for="typ">Change</label><select id="typ"><option value="">All changes</option></select></div>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th style="width:20%">Legacy page</th><th style="width:9%">Change</th><th style="width:21%">Now in the new CRM</th><th style="width:24%">Why</th><th>What it looks like now</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <section class="section-head" aria-labelledby="new-h">
+    <h2 id="new-h">New pages with no legacy equivalent</h2>
+    <p class="lede">These answer questions the old CRM had no screen for.</p>
+  </section>
+  <div class="cards" id="newcards"></div>
+
+  <section class="section-head" aria-labelledby="rules-h">
+    <h2 id="rules-h">Rules applied everywhere</h2>
+  </section>
+  <ul class="rules">
+    <li><span><b>Two levels at most.</b> "Product Management › Offers › Single Offers" became "Catalogue › Products &amp; Plans".</span></li>
+    <li><span><b>Reference lists live in Settings.</b> Low-volume setup pages no longer get top-level menu slots.</span></li>
+    <li><span><b>Breadcrumbs replace Go Back / Go Forward.</b> They are built from the menu, so every page shows where it sits.</span></li>
+    <li><span><b>Risky actions sit in the ⋯ menu.</b> Suspend, publish, revoke and deactivate ask for confirmation, and most need a reason.</span></li>
+    <li><span><b>Status is read-only in lists.</b> No one-click suspend or publish from a table row.</span></li>
+    <li><span><b>Deactivate, never delete</b> for users, and archive instead of delete for plans that are in use.</span></li>
+    <li><span><b>Names match the business.</b> Sales Channels are Partners; Product Captions are Features; Marketing Channels are really lead sources.</span></li>
+    <li><span><b>Shortcuts.</b> Star any page or quick action as a favorite; the avatar menu has My profile and Log out.</span></li>
+  </ul>
+
+  <footer>Sources: the view-only crawl of internal.cicod.com/crm (7 Oct 2026) and the prototype at Cicod CRM. Full write-ups are in CRM/WorkerCrm (Prototype_Update_Guide.md and the module reports).</footer>
+</div>
+
+<dialog id="lb" aria-label="Screenshot">
+  <figure><img id="lbImg" alt=""><figcaption><span id="lbCap"></span><button class="close" id="lbClose">Close</button></figcaption></figure>
+</dialog>
+
+<script>
+const TYPES = {
+  rebuilt: { label: "Rebuilt", desc: "Same job, redesigned page" },
+  moved:   { label: "Moved", desc: "Same page, new place in the menu" },
+  merged:  { label: "Merged", desc: "Folded into another page" },
+  removed: { label: "Removed", desc: "No longer in the CRM UI" },
+  kept:    { label: "Kept for review", desc: "Still there; a change is proposed" },
+};
+
+/* New sidebar. id → label, with groups and sub-folders as in src/lib/nav.ts */
+const NEW_NAV = [
+  { caption: "Daily Operations", items: [
+    { id: "dash", label: "Dashboard", isNew: true },
+    { folder: "Customer Management" }, { id: "cust", label: "Customers", indent: true },
+    { folder: "Catalogue" }, { id: "catpp", label: "Products & Plans", indent: true }, { id: "catb", label: "Bundles", indent: true }, { id: "catp", label: "Pricing", indent: true, isNew: true },
+    { folder: "Billing & Payments" }, { id: "bilo", label: "Overview", indent: true, isNew: true }, { id: "bilp", label: "Payments", indent: true }, { id: "bilc", label: "Collections", indent: true, isNew: true }, { id: "bild", label: "Dunning Policies", indent: true },
+  ]},
+  { caption: "Growth", items: [
+    { folder: "Pipeline" }, { id: "leads", label: "Leads", indent: true },
+    { folder: "Marketing" }, { id: "camp", label: "Campaigns", indent: true }, { id: "cg", label: "Contact Groups (3 pages)", indent: true }, { id: "mch", label: "Marketing Channels", indent: true },
+    { folder: "Partners" }, { id: "part", label: "Partners", indent: true }, { id: "comm", label: "Commission Plans", indent: true },
+    { folder: "Messaging" }, { id: "tpl", label: "Templates", indent: true }, { id: "subs", label: "Subscribers", indent: true },
+  ]},
+  { caption: "Campaign Studio", items: [
+    { id: "cs", label: "5 pages, for team review", isNew: true },
+  ]},
+  { caption: "Administration", items: [
+    { folder: "Settings" }, { id: "sto", label: "Overview", indent: true, isNew: true },
+    { id: "users", label: "Team & Access › Users", indent: true }, { id: "roles", label: "Team & Access › Roles & Permissions", indent: true, isNew: true }, { id: "audit", label: "Team & Access › Audit Log", indent: true, isNew: true },
+    { id: "profile", label: "My Profile", indent: true }, { id: "ref", label: "Reference Data", indent: true },
+    { id: "svc", label: "Catalogue Setup › Service Types", indent: true }, { id: "ptype", label: "Catalogue Setup › Product Types", indent: true }, { id: "bgroup", label: "Catalogue Setup › Bundle Groups", indent: true },
+    { id: "keys", label: "Integrations › Merchant API Keys", indent: true }, { id: "notif", label: "Integrations › Notifications", indent: true },
+  ]},
+];
+const NEW_LABEL = {}; NEW_NAV.forEach(s => s.items.forEach(i => { if (i.id) NEW_LABEL[i.id] = i.label; }));
+
+/* Every legacy page. sec = legacy sidebar section; grp = sub-folder in the legacy menu. */
+const ROWS = [
+  // Customer Management
+  { sec: "Customer Management", page: "Customers", path: "/crm/account/search", t: "rebuilt", to: ["cust"], now: "Customer Management › Customers", route: "/crm/customer-mgt/customers",
+    why: "Search did nothing unless a filter type was picked first. The pager showed 134 buttons and couldn't reach most of the 13,355 records. 13 columns pushed Actions off screen. Overdue customers still showed Active.",
+    look: "Segments with live counts (Trials ending, Renewal overdue, Due this week, Onboarding stuck, Suspended). One search box across name, domain, CICOD number, email and phone. A health badge on every row. Filters are kept in the URL.", img: "c_list" },
+  { sec: "Customer Management", page: "Customer page (7 tabs)", path: "/crm/account/merchant?token=…", t: "rebuilt", to: ["cust"], now: "Customers › Customer 360", route: "/crm/customer-mgt/customers/[id]",
+    why: "About 20 fields, mostly \"-\". Plan, renewal, users and tickets were spread across tabs. No overdue or trial-ending warning. The URL used an opaque token.",
+    look: "Header with status and health badges, one alert for the most urgent issue, a summary strip (plan, monthly value, users vs licences, next renewal, last payment) and five tabs. Opens by CICOD number.", img: "c_detail" },
+  { sec: "Customer Management", page: "Addon tab", path: "Customer page", t: "merged", to: ["cust"], now: "Customer 360 › Subscription & Billing tab", route: "?tab=billing",
+    why: "A thin tab on its own; add-ons belong with the subscription they extend.",
+    look: "Add-ons sit with the plan, renewal, payment history and Record offline payment.", img: "c_billing" },
+  { sec: "Customer Management", page: "Note tab", path: "Customer page", t: "merged", to: ["cust"], now: "Customer 360 › Activity & Notes tab", route: "?tab=activity",
+    why: "Notes were separate from everything else that happened to the customer.",
+    look: "One timeline of notes, suspensions, payments and stage changes, with a note box on top.", img: "e2e_activity" },
+  { sec: "Customer Management", page: "Update Customer (full-page form)", path: "/crm/account/update?token=…", t: "merged", to: ["cust"], now: "Customer 360 › Edit profile", route: "side drawer",
+    why: "Country list ordered by ISO code and not searchable. Phones stored as \"ng808…\". Leaving the page lost the customer context.",
+    look: "A drawer over the customer page with proper dropdowns (sector › business type, country › state) and phones stored as +234." },
+  { sec: "Customer Management", page: "Suspend Customer button", path: "Customer page header", t: "moved", to: ["cust"], now: "Customer 360 › ⋯ menu › Suspend", route: "",
+    why: "It was a green \"success\" button with an edit icon, right next to Update. Easy to click by mistake.",
+    look: "Red, inside the ⋯ menu, behind a confirmation that needs a reason. The reason is written to Activity & Notes." },
+
+  // Service Configuration
+  { sec: "Service Configuration", page: "Service Types", path: "/crm/service-type", t: "moved", to: ["svc"], now: "Settings › Catalogue Setup › Service Types", route: "/crm/service-type",
+    why: "A whole top-level menu section for 4 rows of reference data unchanged since 2019.",
+    look: "Same list, tidied, under Settings. Friendly names with the key shown as a code.", img: "svc" },
+
+  // Product Management
+  { sec: "Product Management", page: "Product Types", path: "/crm/product-type", t: "moved", to: ["ptype"], now: "Settings › Catalogue Setup › Product Types", route: "/crm/product-management/product-types",
+    why: "It holds 1 record (\"software\") but had its own menu slot, create flow, Suspend and Delete.",
+    look: "Listed under Settings with the other catalogue reference data." },
+  { sec: "Product Management", page: "Products", path: "/crm/product", t: "rebuilt", to: ["catpp"], now: "Catalogue › Products & Plans", route: "/crm/catalogue",
+    why: "The catalogue was 7 flat, unrelated tables. Nothing showed which plans a product has, which bundles use them or how many customers are on them.",
+    look: "Products on the left. The selected product shows its plans side by side as cards, with a feature comparison table.", img: "cat" },
+  { sec: "Product Management", page: "Product Captions", path: "/crm/product-caption", t: "merged", to: ["catpp"], now: "Catalogue › Plan editor › Features step", route: "/crm/catalogue/plans/[code]",
+    why: "Captions are really features, and were managed on a 100-row page far from the plans they describe.",
+    look: "Features are ticked per plan inside the plan editor; a new feature can be added from there and joins the product's list.", img: "plan_edit" },
+  { sec: "Product Management", page: "Bundle Groups", path: "/crm/bundle-groups", t: "moved", to: ["bgroup", "catb"], now: "Settings › Catalogue Setup › Bundle Groups", route: "/crm/product-management/bundle-groups",
+    why: "Reference data with 6 records. Bundles are what people work with day to day.",
+    look: "The list moved to Settings. In Catalogue › Bundles, bundles are grouped under their bundle group." },
+  { sec: "Product Management", grp: "Offers", page: "Single Offers", path: "/crm/product-offer", t: "rebuilt", to: ["catpp", "catp"], now: "Catalogue › Products & Plans + Plan editor", route: "/crm/catalogue/plans/[code]",
+    why: "Three menu levels deep. Prices were loose cards with no gap check. About 25 of 35 offers were legacy duplicates (\"Premium.\", \"Premium 1\").",
+    look: "A five-step plan editor: Basics → Features → Pricing → Trial & extras → Review & publish. Pricing is an NGN/USD/GBP × monthly/annual matrix with a live preview. Duplicates hide behind Show archived.", img: "plan_edit" },
+  { sec: "Product Management", grp: "Offers", page: "Set Visibility (in the Actions menu)", path: "Offers and Bundles lists", t: "rebuilt", to: ["catpp", "catb"], now: "Plan and bundle status: Draft → Live → Archived", route: "",
+    why: "It sat next to Delete, with no preview and no confirmation of what changes on the public pricing page.",
+    look: "Publish, unpublish and archive each confirm and name the impact (customers on the plan, bundles that include it, the pricing page). Archiving is blocked while the plan is in use.", img: "pricing" },
+  { sec: "Product Management", grp: "Offers", page: "Bundles", path: "/crm/product-bundle-offer", t: "rebuilt", to: ["catb"], now: "Catalogue › Bundles + Bundle editor", route: "/crm/catalogue/bundles",
+    why: "The form allowed several bundle groups though only one is stored. Licence limits and storage had no units.",
+    look: "Bundles grouped by bundle group. The editor picks at most one live plan per product, prices the bundle and shows what customers save.", img: "bundles" },
+
+  // Billing & Payments
+  { sec: "Billing & Payments", page: "Subscription Payments", path: "/crm/subscription-payments", t: "rebuilt", to: ["bilp", "bilo"], now: "Billing & Payments › Payments", route: "/crm/billing/payments",
+    why: "Every row said CONFIRMED while 87% had actually failed. The totals didn't add up, and the status filter offered values the data never uses.",
+    look: "One row per order with the real status (Paid, Failed, Pending, Refunded), retries grouped, totals that match the filters, and a drawer with every attempt and Send payment link.", img: "b_payments" },
+  { sec: "Billing & Payments", page: "Dunning Plan", path: "/crm/dunning", t: "rebuilt", to: ["bild"], now: "Billing & Payments › Dunning Policies", route: "/crm/billing/dunning",
+    why: "Plans covered 2 of 7 subscription types, so most late payers were never chased. Setting one up took 3 screens.",
+    look: "A coverage strip shows which billing models have a live policy. Uncovered ones get Copy or Start blank.", img: "b_dunning" },
+  { sec: "Billing & Payments", page: "KCI", path: "/crm/kci", t: "merged", to: ["bild"], now: "Dunning policy editor › Steps", route: "/crm/billing/dunning/[id]",
+    why: "\"KCI\" steps were defined globally, then attached per plan on another page, with \"days\" set in two places.",
+    look: "Steps are edited inline on a timeline (days before/after due, email and SMS template), with grace period, a message preview and Impact today.", img: "b_policy" },
+
+  // Growth › Marketing
+  { sec: "Marketing", grp: "Contact Groups", page: "Contact Group Lifecycle", path: "/crm/lifecycle", t: "merged", to: ["leads", "cg"], now: "Pipeline › Leads › Manage stages", route: "/crm/growth/leads",
+    why: "These were sales pipeline stages (Presentation, Proposal) from 2020, disconnected from any lead.",
+    look: "Stages are edited where leads are worked: add (up to 8), rename, recolour, reorder, remove. The old page still sits under Marketing › Contact Groups for review.", img: "g_stage_manage" },
+  { sec: "Marketing", grp: "Contact Groups", page: "Contact Group Types", path: "/crm/contact-group-type", t: "kept", to: ["cg"], now: "Marketing › Contact Groups › Contact Group Types", route: "/crm/contact-group-type",
+    why: "Holds 3 fixed types (Merchants, ICE, Business Partner).",
+    look: "Unchanged for now. Proposed: Settings › Growth setup › Contact types, or a fixed list." },
+  { sec: "Marketing", grp: "Contact Groups", page: "Manage Contact Groups", path: "/crm/contact-group", t: "kept", to: ["cg", "camp"], now: "Marketing › Contact Groups › Manage Contact Groups", route: "/crm/manage-contact-group",
+    why: "Empty (0 groups); a group was only a name, a description and a type.",
+    look: "Unchanged for now. Campaigns already pick their audience in the builder (a customer segment, partners by type or leads by stage). Proposed: rule-based Audiences." },
+  { sec: "Marketing", page: "Marketing Channels", path: "/crm/marketing-channel", t: "kept", to: ["mch", "leads"], now: "Marketing › Marketing Channels", route: "/crm/marketing-channel",
+    why: "These are really lead sources (Facebook, Affiliate (ICE), Email…), and 6 of 10 were inactive.",
+    look: "Unchanged for now; leads already carry a Source. Proposed: rename to Lead sources and move to Settings." },
+  { sec: "Marketing", page: "Manage Campaign", path: "/crm/campaign", t: "rebuilt", to: ["camp"], now: "Marketing › Campaigns", route: "/crm/growth/campaigns",
+    why: "A campaign was a name and two dates: no audience, message, goal or results. One that ended in 2022 still showed Active.",
+    look: "A five-step builder (Basics → Audience → Message → Schedule → Review) with recipient count, live preview and a readiness checklist. Status comes from the dates; finished campaigns show a funnel to customers won.", img: "g_campaigns" },
+  { sec: "Marketing", page: "Leads", path: "/crm/lead", t: "rebuilt", to: ["leads"], now: "Pipeline › Leads", route: "/crm/growth/leads",
+    why: "The list never loaded (API error 400). The create form had 17 fields.",
+    look: "Views (Open, Unassigned, My leads, Follow-up due, Won, Lost), a table or a board by stage with drag and drop, a short create drawer, and Convert to customer.", img: "g_board" },
+  { sec: "Marketing", page: "Prospects", path: "/crm/account/view-prospect", t: "merged", to: ["leads"], now: "Pipeline › Leads (later stages)", route: "/crm/growth/leads",
+    why: "The list never loaded (API error 500). A prospect is a lead further along, so a separate screen split one pipeline in two.",
+    look: "Prospects are leads in Presentation or Proposal. Converting a lead opens the New Customer wizard prefilled.", img: "g_leads" },
+
+  // Sales
+  { sec: "Sales", page: "Sales Channels", path: "/crm/sales-channel/search", t: "rebuilt", to: ["part"], now: "Partners › Partners", route: "/crm/growth/partners",
+    why: "400 partners in one long list. Verification was only a status column, and Delivery Partners couldn't be created.",
+    look: "One list of ICEs, business and delivery partners with a type filter and a Verification queue. Verify, reject and suspend need a confirmation; a partner page shows referred customers and commission.", img: "g_partners" },
+  { sec: "Sales", page: "Sales Commission", path: "/crm/sales-commission", t: "moved", to: ["comm"], now: "Partners › Commission Plans", route: "/crm/growth/commission",
+    why: "Values like \"PERCENT 0.3\" had no unit: 0.3% or 30%?",
+    look: "One card per partner type. Every value shows its unit and a worked example (\"customer pays ₦8,000 → partner earns ₦24\").", img: "g_commission" },
+
+  // Communication
+  { sec: "Communication", page: "Communication Type", path: "/crm/communication-type", t: "merged", to: ["tpl"], now: "Messaging › Templates (channel and purpose)", route: "/crm/growth/messaging",
+    why: "Overlapped with the template's own type, and held a test record (\"Nancy test\").",
+    look: "Each template states its channel (email or SMS) and what it is for." },
+  { sec: "Communication", page: "Communication Groups", path: "/crm/communication-group", t: "merged", to: ["camp"], now: "Campaigns › Audience step", route: "/crm/growth/campaigns/[id]",
+    why: "Duplicated Contact Groups, and also held a test group.",
+    look: "Who receives a message is chosen once, in the campaign's Audience step.", img: "g_campaign_draft" },
+  { sec: "Communication", page: "Communication Templates", path: "/crm/communication-template", t: "rebuilt", to: ["tpl"], now: "Messaging › Templates", route: "/crm/growth/messaging",
+    why: "The only template, used for payment reminders, said \"Thank you for your order\". Email templates failed to load.",
+    look: "One library shared by campaigns and dunning, showing where each template is used and flagging mismatches. Variable chips and an SMS length counter.", img: "g_templates" },
+  { sec: "Communication", page: "Subscription List", path: "/crm/subscription-list", t: "rebuilt", to: ["subs"], now: "Messaging › Subscribers", route: "/crm/growth/messaging/subscribers",
+    why: "34 website sign-ups tagged LEAD sat in a read-only list nobody worked.",
+    look: "Create lead turns a subscriber into a lead; unsubscribing asks first.", img: "g_subscribers" },
+
+  // Settings
+  { sec: "Settings", page: "Manage Users", path: "/crm/manage-users", t: "rebuilt", to: ["users", "roles"], now: "Settings › Team & Access › Users", route: "/crm/settings/users",
+    why: "68 of 70 users were ADMIN, a role couldn't be changed after creation, and Delete sat next to Suspend. 58 users were inactive.",
+    look: "Tabs for Active, Not signed in 90+ days, Invited and Deactivated. Invite instead of create, Change role shows what is gained or lost, Deactivate instead of delete.", img: "s_users" },
+  { sec: "Settings", page: "Profile Settings", path: "/crm/profile-settings", t: "rebuilt", to: ["profile"], now: "Settings › My Profile (also in the avatar menu)", route: "/crm/settings/profile",
+    why: "Personal details and password were on a separate settings page with no rules shown.",
+    look: "Name and phone editable; email, role and status read-only. The password form shows its rules as you type.", img: "s_profile" },
+  { sec: "Settings", grp: "App Configuration", page: "Sales Commission tab", path: "/crm/app-configuration", t: "merged", to: ["comm"], now: "Partners › Commission Plans", route: "/crm/growth/commission",
+    why: "Picked a default plan per partner type, but each type had exactly one plan. Two screens for one decision.",
+    look: "Each partner type has one plan, edited in one place." },
+  { sec: "Settings", grp: "App Configuration", page: "Db Instances tab", path: "/crm/app-configuration", t: "removed", to: [], now: "Not in the CRM", route: "",
+    why: "Showed a database host address in plain text with a Create DB Instance button. Infrastructure doesn't belong in a business screen.",
+    look: "Moves to deployment configuration, outside the CRM." },
+  { sec: "Settings", grp: "App Configuration", page: "Service Keys tab", path: "/crm/app-configuration", t: "removed", to: ["catpp"], now: "Shown read-only as product codes in Catalogue", route: "",
+    why: "These are the product codes (COM, WFM, UCG, IMS) the catalogue already uses.",
+    look: "Visible as each product's code; no separate page." },
+  { sec: "Settings", grp: "App Configuration", page: "Placeholders tab", path: "/crm/app-configuration", t: "merged", to: ["tpl"], now: "Messaging › Templates › variable chips", route: "/crm/growth/messaging",
+    why: "Empty, and not connected to the templates that use placeholders.",
+    look: "Variables are offered as chips right in the template editor." },
+  { sec: "Settings", grp: "App Configuration", page: "Triggers tab", path: "/crm/app-configuration", t: "rebuilt", to: ["notif"], now: "Settings › Integrations › Notifications", route: "/crm/settings/notifications",
+    why: "Never loaded (API error 400), so automated messages couldn't be set up.",
+    look: "System events (customer created, trial ending, payment failed…) each with on/off, channel, template and recipients. A wrong kind of template raises a warning.", img: "s_notifications" },
+  { sec: "Settings", page: "Generate Merchant Key", path: "/crm/generate-merchant-key", t: "rebuilt", to: ["keys"], now: "Settings › Integrations › Merchant API Keys", route: "/crm/settings/api-keys",
+    why: "One free-text Merchant ID box and Submit. No lookup, no list of issued keys, no way to revoke.",
+    look: "Pick the customer, say what the key is for, see it once with Copy. Issued keys are listed, unused ones flagged, and revoking needs a reason.", img: "s_keys" },
+  { sec: "Settings", grp: "Business Setup", page: "Currencies", path: "/crm/currency", t: "merged", to: ["ref"], now: "Settings › Reference Data › Currencies", route: "/crm/settings/reference?tab=currencies",
+    why: "119 currencies all active, including retired codes (ZMK, VEF), though prices use only NGN, USD and GBP.",
+    look: "Only switched-on currencies can be used. One used by live prices can't be switched off; retired codes can't be switched on.", img: "s_ref_currencies" },
+  { sec: "Settings", grp: "Business Setup", page: "Continents", path: "/crm/continent", t: "merged", to: ["ref"], now: "Reference Data › Locations (a column)", route: "/crm/settings/reference?tab=locations",
+    why: "A whole page for a value that never changes.",
+    look: "Shown as a column on countries." },
+  { sec: "Settings", grp: "Business Setup", page: "Countries", path: "/crm/country", t: "merged", to: ["ref"], now: "Settings › Reference Data › Locations", route: "/crm/settings/reference?tab=locations",
+    why: "251 countries (more than ISO's 249), with no sense of where CICOD actually operates.",
+    look: "Only operating countries are switched on, each with a completeness badge such as \"4 of 9 provinces\".", img: "s_ref_locations" },
+  { sec: "Settings", grp: "Business Setup", page: "States", path: "/crm/states", t: "merged", to: ["ref"], now: "Reference Data › Locations (drill down)", route: "/crm/settings/reference?tab=locations",
+    why: "Separate page from the countries they belong to.",
+    look: "Country → states or regions, added in place." },
+  { sec: "Settings", grp: "Business Setup", page: "Counties", path: "/crm/county", t: "merged", to: ["ref"], now: "Reference Data › Locations (drill down)", route: "/crm/settings/reference?tab=locations",
+    why: "Separate page, far from the state each county belongs to.",
+    look: "State → LGAs or counties, added in place." },
+  { sec: "Settings", grp: "Business Setup", page: "Business Sectors", path: "/crm/business-sector", t: "merged", to: ["ref"], now: "Reference Data › Sectors & business types", route: "/crm/settings/reference?tab=sectors",
+    why: "Sectors and their business types were on two separate pages.",
+    look: "Sectors with their types on one tab. Switching off a used sector first shows how many customers use it; sectors with no types are flagged.", img: "s_ref_sectors" },
+  { sec: "Settings", grp: "Business Setup", page: "Business Types", path: "/crm/business-type", t: "merged", to: ["ref"], now: "Reference Data › Sectors & business types", route: "/crm/settings/reference?tab=sectors",
+    why: "159 types, but pickers loaded only the first 100.",
+    look: "Listed under their sector; every form gets the full switched-on list." },
+  { sec: "Settings", grp: "Business Setup", page: "Payment Channel", path: "/crm/payment-channel", t: "merged", to: ["ref"], now: "Reference Data › Payment methods", route: "/crm/settings/reference?tab=payments",
+    why: "Not connected to recording offline payments.",
+    look: "Choose which offline methods staff can record and whether each needs a reference. Feeds Billing's Record offline payment.", img: "s_ref_payments" },
+
+  // Global
+  { sec: "Every page", page: "Go Back / Go Forward buttons", path: "Page header", t: "removed", to: [], now: "Breadcrumbs on every page", route: "",
+    why: "They copied the browser's buttons and took prime header space; detail pages had three ways back and no link to the parent.",
+    look: "A breadcrumb built from the menu, naming the record on detail pages (e.g. Customers › Eko Logistics)." },
+];
+
+const NEW_ONLY = [
+  { title: "Dashboard", where: "Daily Operations › Dashboard", img: "home", text: "What needs attention today: renewals overdue, trials ending, onboarding stuck, suspended, plus onboarding and monthly value by product." },
+  { title: "New Customer wizard", where: "Customers › New customer", img: "e2e_newcustomer", text: "Business → Primary contact → Plan → Review. The domain is checked as you type; only live plans are offered. Also used when a lead is converted." },
+  { title: "Pricing grid", where: "Catalogue › Pricing", img: "bundle_pricing", text: "Every plan and bundle price in one grid, with missing prices highlighted." },
+  { title: "Billing overview", where: "Billing & Payments › Overview", img: "b_overview", text: "Collected, Failed, Pending, Overdue now and Recovery rate for a period, each opening the list behind it." },
+  { title: "Collections", where: "Billing & Payments › Collections", img: "b_collections", text: "Customers due or overdue, grouped by dunning stage, with send reminder, record payment, extend, pause and suspend." },
+  { title: "Roles & Permissions", where: "Settings › Team & Access", img: "s_roles", text: "One access level per area (No access, View, Edit, Full). Built-in roles are locked; saving shows every change and who it affects." },
+  { title: "Audit log", where: "Settings › Team & Access", img: "s_audit", text: "Who changed what, to which record, and when. Filter by area and person; export to CSV." },
+  { title: "Settings overview", where: "Settings › Overview", img: "s_home", text: "Cards with live counts and a Needs attention list, plus a table of where each old Settings page went." },
+  { title: "Favorites and account menu", where: "Sidebar and avatar", img: "f_menu", text: "Star pages or quick actions to pin them in the sidebar. The avatar opens My profile and Log out." },
+  { title: "Campaign Studio", where: "Campaign Studio (sidebar section)", img: "cs_library", text: "Brought in from CAMPAIGNStudioFE and rebranded to CICOD, for the team to review: versioned email templates, campaigns with frozen runs, contacts, sender profiles." },
+];
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const crumb = (s) => s.split(" › ").map(esc).join('<span class="sep">›</span>');
+ROWS.forEach((r, i) => r.id = "L" + i);
+
+const active = new Set(Object.keys(TYPES));
+let selected = null; // { side: 'L'|'R', id }
+
+/* stats + legend */
+function renderStats() {
+  const by = (t) => ROWS.filter(r => r.t === t).length;
+  const items = [
+    ["hero", ROWS.length, "legacy pages and screens traced"],
+    ["", by("rebuilt"), "rebuilt"], ["", by("moved"), "moved"], ["", by("merged"), "merged into another page"],
+    ["", by("removed"), "removed"], ["", by("kept"), "kept for review"], ["", NEW_ONLY.length, "new, no legacy page"],
+  ];
+  $("#stats").innerHTML = items.map(([c, n, l]) => `<div class="stat ${c}"><b>${n}</b><span>${l}</span></div>`).join("");
+  $("#legend").innerHTML = Object.entries(TYPES).map(([k, v]) =>
+    `<button class="chip" data-t="${k}" aria-pressed="true" title="${esc(v.desc)}"><span class="dot"></span>${v.label} <span class="n">${by(k)}</span></button>`).join("")
+    + `<span class="chip" data-t="new" style="cursor:default" title="Pages with no legacy equivalent"><span class="dot"></span>New page</span>`;
+  $("#legend").querySelectorAll("button.chip").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.t; active.has(k) ? active.delete(k) : active.add(k); if (!active.size) Object.keys(TYPES).forEach(t => active.add(t));
+    $("#legend").querySelectorAll("button.chip").forEach(x => x.setAttribute("aria-pressed", active.has(x.dataset.t)));
+    applyMap(); renderTable();
+  }));
+}
+
+/* map */
+function renderMap() {
+  const left = $("#left"); let html = ""; let curSec = null, curGrp = null;
+  ROWS.forEach(r => {
+    if (r.sec !== curSec) { if (curSec) html += "</div>"; html += `<div class="grp"><div class="grp-name">${esc(r.sec)}</div>`; curSec = r.sec; curGrp = null; }
+    if (r.grp && r.grp !== curGrp) { html += `<div class="sub">${esc(r.grp)}</div>`; curGrp = r.grp; }
+    if (!r.grp) curGrp = null;
+    html += `<button class="node${r.grp ? " indent" : ""}" data-side="L" data-id="${r.id}" data-t="${r.t}"><span class="dot"></span><span class="lbl">${esc(r.page)}</span>${r.t === "removed" && !r.to.length ? '<span class="tail">removed</span>' : ""}</button>`;
+  });
+  left.insertAdjacentHTML("beforeend", html + "</div>");
+  $("#leftCount").textContent = ROWS.length;
+  const right = $("#right"); html = "";
+  NEW_NAV.forEach(s => {
+    html += `<div class="grp"><div class="grp-name">${esc(s.caption)}</div>`;
+    s.items.forEach(i => {
+      if (i.folder) { html += `<div class="sub">${esc(i.folder)}</div>`; return; }
+      html += `<button class="node${i.indent ? " indent" : ""}${i.isNew ? " isnew" : ""}" data-side="R" data-id="${i.id}"><span class="dot"></span><span class="lbl">${esc(i.label)}</span>${i.isNew ? '<span class="tail">new</span>' : ""}</button>`;
+    });
+    html += "</div>";
+  });
+  right.insertAdjacentHTML("beforeend", html);
+  $("#rightCount").textContent = Object.keys(NEW_LABEL).length;
+  document.querySelectorAll("#map .node").forEach(n => n.addEventListener("click", () => {
+    const key = { side: n.dataset.side, id: n.dataset.id };
+    selected = selected && selected.side === key.side && selected.id === key.id ? null : key;
+    applyMap();
+  }));
+  $("#clear").addEventListener("click", () => { selected = null; applyMap(); });
+}
+function links() { return ROWS.filter(r => active.has(r.t)).flatMap(r => r.to.map(to => ({ from: r.id, to, t: r.t }))); }
+function applyMap() {
+  const ls = links();
+  let litL = null, litR = null;
+  if (selected) {
+    if (selected.side === "L") { litL = new Set([selected.id]); litR = new Set(ROWS.find(r => r.id === selected.id).to); }
+    else { litR = new Set([selected.id]); litL = new Set(ROWS.filter(r => r.to.includes(selected.id) && active.has(r.t)).map(r => r.id)); }
+  }
+  document.querySelectorAll('#left .node').forEach(n => {
+    const r = ROWS.find(x => x.id === n.dataset.id); const shown = active.has(r.t);
+    n.classList.toggle("dim", !shown || (litL && !litL.has(n.dataset.id)));
+    n.classList.toggle("on", !!(litL && litL.has(n.dataset.id) && selected));
+  });
+  document.querySelectorAll('#right .node').forEach(n => {
+    n.classList.toggle("dim", !!(litR && !litR.has(n.dataset.id)));
+    n.classList.toggle("on", !!(litR && litR.has(n.dataset.id)));
+  });
+  drawWires(ls, litL, litR);
+  const d = $("#detail"); $("#clear").hidden = !selected;
+  if (!selected) { d.hidden = true; $("#hint").textContent = "Nothing selected. Click a page on either side."; return; }
+  if (selected.side === "L") {
+    const r = ROWS.find(x => x.id === selected.id);
+    $("#hint").textContent = `${r.sec} › ${r.page}`;
+    d.innerHTML = `<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="badge" data-t="${r.t}">${TYPES[r.t].label}</span><span class="crumb">${crumb(r.now)}</span></div><p class="why"><b>Why:</b> ${esc(r.why)}</p><p><b>Now:</b> ${esc(r.look)}</p><p><button class="linkbtn" data-goto="${r.id}">Show in the table ↓</button></p>`;
+  } else {
+    const rs = ROWS.filter(r => r.to.includes(selected.id) && active.has(r.t));
+    const isNew = NEW_ONLY.find(n => n.where.endsWith(NEW_LABEL[selected.id]) || NEW_LABEL[selected.id].startsWith(n.title));
+    $("#hint").textContent = `New: ${NEW_LABEL[selected.id]}`;
+    d.innerHTML = rs.length
+      ? `<p><b>${rs.length} legacy ${rs.length === 1 ? "page feeds" : "pages feed"} into ${esc(NEW_LABEL[selected.id])}:</b></p><p>${rs.map(r => `<span class="badge" data-t="${r.t}" style="margin:2px 4px 2px 0">${esc(r.page)}</span>`).join("")}</p>`
+      : `<p><b>${esc(NEW_LABEL[selected.id])}</b> has no legacy equivalent. ${isNew ? esc(isNew.text) : ""}</p>`;
+  }
+  d.hidden = false;
+  d.querySelector("[data-goto]")?.addEventListener("click", (e) => jumpTo(e.target.dataset.goto));
+}
+function drawWires(ls, litL, litR) {
+  const svg = $("#wires"); const map = $("#map");
+  if (getComputedStyle(svg).display === "none") { svg.innerHTML = ""; return; }
+  const box = map.getBoundingClientRect(); svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
+  const pos = (side, id) => { const el = map.querySelector(`.node[data-side="${side}"][data-id="${id}"]`); if (!el) return null; const b = el.getBoundingClientRect(); return { x: side === "L" ? b.right - box.left : b.left - box.left, y: b.top - box.top + b.height / 2 }; };
+  const css = getComputedStyle(document.documentElement);
+  let out = "";
+  ls.forEach(l => {
+    const a = pos("L", l.from), b = pos("R", l.to); if (!a || !b) return;
+    const hot = selected && litL && litL.has(l.from) && litR && litR.has(l.to);
+    const dx = (b.x - a.x) * 0.5;
+    const col = css.getPropertyValue(`--t-${l.t}`).trim();
+    out += `<path d="M${a.x + 2},${a.y} C${a.x + dx},${a.y} ${b.x - dx},${b.y} ${b.x - 2},${b.y}" fill="none" stroke="${col}" stroke-width="${hot ? 2 : 1.2}" stroke-opacity="${selected ? (hot ? 0.95 : 0.06) : 0.32}"/>`;
+  });
+  svg.innerHTML = out;
+}
+
+/* table */
+function renderFilters() {
+  [...new Set(ROWS.map(r => r.sec))].forEach(s => $("#sec").insertAdjacentHTML("beforeend", `<option>${esc(s)}</option>`));
+  Object.entries(TYPES).forEach(([k, v]) => $("#typ").insertAdjacentHTML("beforeend", `<option value="${k}">${v.label}</option>`));
+  ["#q", "#sec", "#typ"].forEach(s => $(s).addEventListener("input", renderTable));
+}
+function renderTable() {
+  const q = $("#q").value.trim().toLowerCase(), sec = $("#sec").value, typ = $("#typ").value;
+  const rows = ROWS.filter(r => active.has(r.t) && (!sec || r.sec === sec) && (!typ || r.t === typ) &&
+    (!q || [r.sec, r.grp, r.page, r.path, r.now, r.route, r.why, r.look].join(" ").toLowerCase().includes(q)));
+  let html = "", cur = null;
+  rows.forEach(r => {
+    if (r.sec !== cur) { html += `<tr class="sec-row"><td colspan="5">${esc(r.sec)}</td></tr>`; cur = r.sec; }
+    html += `<tr id="row-${r.id}">
+      <td><span class="page-name">${r.grp ? `<span style="color:var(--muted);font-weight:500">${esc(r.grp)} › </span>` : ""}${esc(r.page)}</span><span class="path mono">${esc(r.path)}</span></td>
+      <td><span class="badge" data-t="${r.t}">${TYPES[r.t].label}</span></td>
+      <td><span class="crumb">${crumb(r.now)}</span>${r.route ? `<span class="path mono">${esc(r.route)}</span>` : ""}</td>
+      <td class="why">${esc(r.why)}</td>
+      <td class="look">${esc(r.look)}${r.img ? `<button class="shot" data-img="${r.img}" data-cap="${esc(r.now)}" aria-label="Enlarge screenshot of ${esc(r.now)}"><img src="img/${r.img}.webp" alt="" loading="lazy"></button>` : ""}</td>
+    </tr>`;
+  });
+  $("#rows").innerHTML = html || `<tr><td colspan="5" class="none">No pages match. Clear the search or switch a change type back on.</td></tr>`;
+  $("#count").textContent = `${rows.length} of ${ROWS.length} pages`;
+}
+function jumpTo(id) {
+  ["#q", "#sec", "#typ"].forEach(s => $(s).value = ""); renderTable();
+  const tr = document.getElementById("row-" + id); if (!tr) return;
+  tr.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+  tr.classList.remove("flash"); void tr.offsetWidth; tr.classList.add("flash");
+}
+
+/* new cards */
+function renderNew() {
+  $("#newcards").innerHTML = NEW_ONLY.map(n => `<article class="card" data-t="new"><span class="badge" data-t="new" style="align-self:flex-start">New</span><h3>${esc(n.title)}</h3><span class="where">${crumb(n.where)}</span><p>${esc(n.text)}</p>${n.img ? `<button class="shot" data-img="${n.img}" data-cap="${esc(n.title)}" aria-label="Enlarge screenshot of ${esc(n.title)}"><img src="img/${n.img}.webp" alt="" loading="lazy"></button>` : ""}</article>`).join("");
+}
+
+/* lightbox */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest(".shot"); if (!b) return;
+  $("#lbImg").src = `img/${b.dataset.img}.webp`; $("#lbImg").alt = "Screenshot: " + b.dataset.cap; $("#lbCap").textContent = b.dataset.cap;
+  $("#lb").showModal();
+});
+$("#lbClose").addEventListener("click", () => $("#lb").close());
+$("#lb").addEventListener("click", (e) => { if (e.target === $("#lb")) $("#lb").close(); });
+
+renderStats(); renderMap(); renderFilters(); renderTable(); renderNew(); applyMap();
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(applyMap, 80); });
+if (document.fonts) document.fonts.ready.then(applyMap);
+new ResizeObserver(() => applyMap()).observe($("#map"));
+</script>

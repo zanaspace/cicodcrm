@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronRight, Moon } from "lucide-react";
+import { Bell, ChevronRight, Moon, Map } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, Suspense, useSyncExternalStore } from "react";
@@ -123,6 +123,10 @@ export function Header() {
 
       {/* Right Controls */}
       <div className="flex items-center gap-6">
+
+        <a href="/crm-module-map.html" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[0.85rem] font-semibold bg-[var(--primary)] text-white px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity">
+          <Map className="w-4 h-4" /> Module Map
+        </a>
 
         {/* Theme Toggle (Switch) */}
         <div className="flex items-center gap-2">

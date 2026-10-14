@@ -1,7 +1,7 @@
 import type { ElementType } from "react";
 import {
   LayoutDashboard, Users, Layers, Target, Briefcase, MessageSquare, CreditCard, Settings, Funnel,
-  LayoutTemplate, Send, Contact, Plug, ShieldCheck, CalendarRange, FlaskConical,
+  LayoutTemplate, Send, Contact, Plug, ShieldCheck,
 } from "lucide-react";
 
 export type NavLeaf = { label: string; href: string };
@@ -112,21 +112,6 @@ export const NAV: NavSection[] = [
             ],
           },
         ],
-      },
-    ],
-  },
-  {
-    caption: "Delivery & QA",
-    groups: [
-      {
-        title: "Sprint Roadmap & PRDs",
-        icon: CalendarRange,
-        href: "/crm/roadmap",
-      },
-      {
-        title: "QA Test Scenarios",
-        icon: FlaskConical,
-        href: "/crm/roadmap#testcases",
       },
     ],
   },

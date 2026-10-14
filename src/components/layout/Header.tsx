@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronRight, Moon, Map, CalendarRange, PanelLeft, FlaskConical } from "lucide-react";
+import { Bell, ChevronRight, Moon, Map, PanelLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, Suspense, useSyncExternalStore } from "react";
@@ -37,6 +37,9 @@ function useBreadcrumb(): Crumb[] {
   const studioCampaigns = useStudioCampaigns();
   const crumbs: Crumb[] = [{ label: "Home", href: "/" }];
   if (pathname === "/") return [{ label: "Home" }, { label: "Dashboard" }];
+  if (pathname === "/crm/roadmap" || pathname === "/roadmap") {
+    return [{ label: "Home", href: "/" }, { label: "Sprint Roadmap & PRDs" }];
+  }
 
   const match = matchNav(pathname);
   if (!match) return [...crumbs, { label: "Not found" }];
@@ -140,14 +143,6 @@ export function Header({
 
       {/* Right Controls */}
       <div className="flex items-center gap-3">
-
-        <Link href="/crm/roadmap#testcases" className="hidden sm:flex items-center gap-1.5 text-[0.85rem] font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 px-3 py-1.5 rounded-md hover:bg-purple-600 hover:text-white transition-colors" title="QA Acceptance Test Cases & Use Cases">
-          <FlaskConical className="w-4 h-4 text-purple-500" /> Test Scenarios
-        </Link>
-
-        <Link href="/crm/roadmap" className="flex items-center gap-1.5 text-[0.85rem] font-semibold bg-[var(--secondary)] text-white px-3 py-1.5 rounded-md hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors">
-          <CalendarRange className="w-4 h-4 text-[var(--primary)]" /> Sprint Roadmap
-        </Link>
 
         <a href="/crm-module-map.html" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[0.85rem] font-semibold bg-[var(--primary)] text-white px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity">
           <Map className="w-4 h-4" /> Module Map

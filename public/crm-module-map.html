@@ -245,8 +245,8 @@ const NEW_NAV = [
     { id: "cs", label: "5 pages, for team review", isNew: true },
   ]},
   { caption: "Administration", items: [
-    { folder: "Settings" }, { id: "sto", label: "Overview", indent: true, isNew: true },
-    { id: "users", label: "Team & Access › Users", indent: true }, { id: "roles", label: "Team & Access › Roles & Permissions", indent: true, isNew: true }, { id: "audit", label: "Team & Access › Audit Log", indent: true, isNew: true },
+    { folder: "Settings" },
+    { id: "users", label: "Users", indent: true }, { id: "roles", label: "Roles & Permissions", indent: true, isNew: true }, { id: "audit", label: "Audit Log", indent: true, isNew: true },
     { id: "profile", label: "My Profile", indent: true }, { id: "ref", label: "Reference Data", indent: true },
     { id: "svc", label: "Catalogue Setup › Service Types", indent: true }, { id: "ptype", label: "Catalogue Setup › Product Types", indent: true }, { id: "bgroup", label: "Catalogue Setup › Bundle Groups", indent: true },
     { id: "keys", label: "Integrations › Merchant API Keys", indent: true }, { id: "notif", label: "Integrations › Notifications", indent: true },
@@ -361,7 +361,7 @@ const ROWS = [
     look: "Create lead turns a subscriber into a lead; unsubscribing asks first.", img: "g_subscribers" },
 
   // Settings
-  { sec: "Settings", page: "Manage Users", path: "/crm/manage-users", t: "rebuilt", to: ["users", "roles"], now: "Settings › Team & Access › Users", route: "/crm/settings/users",
+  { sec: "Settings", page: "Manage Users", path: "/crm/manage-users", t: "rebuilt", to: ["users", "roles"], now: "Settings › Users", route: "/crm/settings/users",
     why: "68 of 70 users were ADMIN, a role couldn't be changed after creation, and Delete sat next to Suspend. 58 users were inactive.",
     look: "Tabs for Active, Not signed in 90+ days, Invited and Deactivated. Invite instead of create, Change role shows what is gained or lost, Deactivate instead of delete.", img: "s_users" },
   { sec: "Settings", page: "Profile Settings", path: "/crm/profile-settings", t: "rebuilt", to: ["profile"], now: "Settings › My Profile (also in the avatar menu)", route: "/crm/settings/profile",
@@ -422,8 +422,8 @@ const NEW_ONLY = [
   { title: "Pricing grid", where: "Catalogue › Pricing", img: "bundle_pricing", text: "Every plan and bundle price in one grid, with missing prices highlighted." },
   { title: "Billing overview", where: "Billing & Payments › Overview", img: "b_overview", text: "Collected, Failed, Pending, Overdue now and Recovery rate for a period, each opening the list behind it." },
   { title: "Collections", where: "Billing & Payments › Collections", img: "b_collections", text: "Customers due or overdue, grouped by dunning stage, with send reminder, record payment, extend, pause and suspend." },
-  { title: "Roles & Permissions", where: "Settings › Team & Access", img: "s_roles", text: "One access level per area (No access, View, Edit, Full). Built-in roles are locked; saving shows every change and who it affects." },
-  { title: "Audit log", where: "Settings › Team & Access", img: "s_audit", text: "Who changed what, to which record, and when. Filter by area and person; export to CSV." },
+  { title: "Roles & Permissions", where: "Settings", img: "s_roles", text: "One access level per area (No access, View, Edit, Full). Built-in roles are locked; saving shows every change and who it affects." },
+  { title: "Audit log", where: "Settings", img: "s_audit", text: "Who changed what, to which record, and when. Filter by area and person; export to CSV." },
   { title: "Settings overview", where: "Settings › Overview", img: "s_home", text: "Cards with live counts and a Needs attention list, plus a table of where each old Settings page went." },
   { title: "Favorites and account menu", where: "Sidebar and avatar", img: "f_menu", text: "Star pages or quick actions to pin them in the sidebar. The avatar opens My profile and Log out." },
   { title: "Campaign Studio", where: "Campaign Studio (sidebar section)", img: "cs_library", text: "Brought in from CAMPAIGNStudioFE and rebranded to CICOD, for the team to review: versioned email templates, campaigns with frozen runs, contacts, sender profiles." },

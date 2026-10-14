@@ -125,7 +125,7 @@ export function FavoritesSection({ isCollapsed }: { isCollapsed: boolean }) {
     <ul aria-label="Favorites" className="flex flex-col gap-0.5">
       {isCollapsed ? <li aria-hidden className="h-0 border-b border-[var(--sidebar-border)] w-8 mx-auto mb-3 mt-1" /> : (
         <li className="flex items-center justify-between px-3 pt-2 pb-2">
-          <span className="text-[0.75rem] text-[#6B7787] uppercase font-semibold tracking-wider flex items-center gap-1.5"><Star className="w-3.5 h-3.5" /> Favorites</span>
+          <span className="text-[0.75rem] text-[var(--sidebar-caption)] uppercase font-semibold tracking-wider flex items-center gap-1.5"><Star className="w-3.5 h-3.5" /> Favorites</span>
           <button type="button" onClick={openFavoritesManager} aria-label="Manage favorites" title="Manage favorites"
             className="p-1 rounded-md text-[var(--sidebar-foreground)] hover:text-[var(--sidebar-accent-foreground)] hover:bg-[var(--sidebar-accent)]"><Settings2 className="w-4 h-4" /></button>
         </li>
@@ -138,7 +138,7 @@ export function FavoritesSection({ isCollapsed }: { isCollapsed: boolean }) {
         return (
           <li key={f.id} title={isCollapsed ? f.label : undefined}>
             <Link href={f.href} aria-current={active ? "page" : undefined}
-              className={cn("flex items-center gap-3 px-3 py-2 rounded-lg transition-colors", isCollapsed && "justify-center",
+              className={cn("flex items-center gap-3 px-3 py-2 rounded-lg transition-colors font-medium", isCollapsed && "justify-center",
                 active ? "text-[var(--sidebar-accent-foreground)] bg-[var(--accent)] font-heading font-semibold" : "text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)] hover:text-[var(--sidebar-accent-foreground)]")}>
               <span className="relative shrink-0">
                 <FavoriteIcon f={f} className="w-[18px] h-[18px]" />

@@ -46,7 +46,7 @@ export function Switch({ checked, onChange, label, disabled }: { checked: boolea
   return (
     <button type="button" role="switch" aria-checked={checked} aria-label={label} disabled={disabled}
       onClick={(e) => { e.stopPropagation(); onChange(!checked); }}
-      className={cn("relative w-11 h-6 shrink-0 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed", checked ? "bg-[var(--primary)]" : "bg-[var(--input)]")}>
+      className={cn("relative w-11 h-6 shrink-0 rounded-full cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed", checked ? "bg-[var(--primary)]" : "bg-[var(--input)]")}>
       <span className={cn("absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm transition-transform", checked ? "translate-x-6" : "translate-x-1")} />
     </button>
   );

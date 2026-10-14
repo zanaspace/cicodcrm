@@ -54,7 +54,7 @@ export function ProfileMenu() {
           <div className="p-1.5 flex flex-col">
             <button role="menuitem" className={item} onClick={go(() => router.push("/crm/settings/profile"))}><UserCircle className="w-4 h-4 text-[var(--muted-foreground)]" /> My profile</button>
             <button role="menuitem" className={item} onClick={go(openFavoritesManager)}><Star className="w-4 h-4 text-[var(--muted-foreground)]" /> Manage favorites</button>
-            <button role="menuitem" className={item} onClick={go(() => router.push("/crm/settings"))}><Settings className="w-4 h-4 text-[var(--muted-foreground)]" /> Settings</button>
+            <button role="menuitem" className={item} onClick={go(() => router.push("/crm/settings/users"))}><Settings className="w-4 h-4 text-[var(--muted-foreground)]" /> Settings</button>
           </div>
           <div className="p-1.5 border-t border-[var(--border)]">
             <button role="menuitem" className={cn(item, "text-[var(--destructive)] font-semibold")} onClick={go(() => router.push("/login?signedout=1"))}><LogOut className="w-4 h-4" /> Log out</button>

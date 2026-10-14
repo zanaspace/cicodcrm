@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
-import { ChevronDown, Menu, Folder } from "lucide-react";
+import { ChevronDown, PanelLeft, Folder } from "lucide-react";
 import { NAV, isFolder, matchNav, type NavGroup } from "@/lib/nav";
 import { FavoritesSection } from "./favorites";
 
@@ -83,7 +83,7 @@ function SubLink({ href, children, active }: { href: string; children: React.Rea
       <Link
         href={href}
         aria-current={active ? "page" : undefined}
-        className={`block py-1.5 text-[0.88rem] transition-colors truncate ${
+        className={`block py-1.5 text-[0.88rem] font-medium transition-colors truncate ${
           active
             ? "text-[var(--primary)] font-heading font-semibold"
             : "text-[var(--sidebar-foreground)] hover:text-[var(--sidebar-accent-foreground)]"
@@ -104,7 +104,7 @@ function NestedAccordion({ title, children, openByDefault = false }: { title: st
         type="button"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-1.5 rounded-md transition-colors cursor-pointer text-[var(--sidebar-foreground)] hover:text-[var(--sidebar-accent-foreground)]"
+        className="w-full flex items-center justify-between px-3 py-1.5 rounded-md transition-colors cursor-pointer text-[var(--sidebar-foreground)] hover:text-[var(--sidebar-accent-foreground)] font-medium"
       >
         <span className="text-[0.88rem] truncate flex items-center gap-2">
           <Folder className="w-4 h-4" />
@@ -144,7 +144,7 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean,
           </Link>
         )}
         <button onClick={toggleCollapse} aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"} className="text-[var(--sidebar-foreground)] hover:text-[var(--sidebar-accent-foreground)] transition-colors p-1.5 rounded-md hover:bg-[var(--sidebar-accent)] shrink-0">
-          <Menu className="w-5 h-5" />
+          <PanelLeft className="w-5 h-5" />
         </button>
       </div>
 
@@ -154,7 +154,7 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean,
         {NAV.map((section, si) => (
           <ul key={section.caption} className="flex flex-col gap-1">
             {!isCollapsed ? (
-              <div className={`text-[0.75rem] text-[#6B7787] uppercase font-semibold tracking-wider px-3 pb-2 truncate ${si === 0 ? "pt-4" : "pt-5"}`}>{section.caption}</div>
+              <div className={`text-[0.75rem] text-[var(--sidebar-caption)] uppercase font-semibold tracking-wider px-3 pb-2 truncate ${si === 0 ? "pt-4" : "pt-5"}`}>{section.caption}</div>
             ) : (
               <div className="h-0 border-b border-[var(--sidebar-border)] w-8 mx-auto my-4"></div>
             )}

@@ -79,7 +79,10 @@ export function Field({ label, required, error, hint, children, className, group
 /** Style guide §10 switch row: title + description + switch. */
 export function SwitchRow({ title, description, checked, onChange }: { title: string; description: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div className="flex items-center justify-between gap-6 p-4 rounded-lg border border-[var(--border)]">
+    <div
+      onClick={() => onChange(!checked)}
+      className="flex items-center justify-between gap-6 p-4 rounded-lg border border-[var(--border)] cursor-pointer hover:border-[var(--primary)]/40 transition-colors"
+    >
       <div>
         <div className="font-heading font-bold text-[0.95rem]">{title}</div>
         <div className="text-[0.8rem] text-[var(--muted-foreground)]">{description}</div>
@@ -89,10 +92,16 @@ export function SwitchRow({ title, description, checked, onChange }: { title: st
         role="switch"
         aria-checked={checked}
         aria-label={title}
-        onClick={() => onChange(!checked)}
-        className={cn("relative w-11 h-6 shrink-0 rounded-full transition-colors", checked ? "bg-[var(--primary)]" : "bg-[var(--input)]")}
+        onClick={(e) => {
+          e.stopPropagation();
+          onChange(!checked);
+        }}
+        className={cn(
+          "relative w-11 h-6 shrink-0 rounded-full cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+          checked ? "bg-[var(--primary)]" : "bg-[var(--input)]"
+        )}
       >
-        <span className={cn("absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform", checked ? "translate-x-6" : "translate-x-1")} />
+        <span className={cn("absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm transition-transform", checked ? "translate-x-6" : "translate-x-1")} />
       </button>
     </div>
   );

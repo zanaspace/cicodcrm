@@ -1,0 +1,55 @@
+# CICOD CRM: Product Requirements Documents (PRD) Suite
+
+This directory contains the complete collection of Product Requirements Documents (PRDs) for the phased reconstruction of the enterprise **CICOD CRM**. Every PRD in this directory adheres strictly to the standardized 14-section enterprise structure specified in [prdcontnet.md](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/Cicod%20CRM/public/prdcontnet.md).
+
+---
+
+## Standardized 14-Section PRD Architecture
+Every Sprint PRD is structured identically to ensure comprehensive engineering clarity and cross-functional alignment:
+
+1. **Document Control & Metadata:** Version, authors, target sprint, and target audience.
+2. **Executive Summary & Core Deliverables:** Legacy problem statements and key sprint deliverables.
+3. **Product Vision & Strategic Objectives:** High-level strategic rationale and design principles.
+4. **Target Audience & User Personas:** Primary operator roles and user context.
+5. **Scope Boundaries:**
+   - 5.1 In-Scope
+   - 5.2 Out-of-Scope
+6. **Comprehensive User Flow & Journey Maps:**
+   - 6.1 Primary Happy Path Flow (Mermaid diagrams)
+   - 6.2 Alternate & Exception Flows
+7. **Functional Requirements (FRs):** Granular, numbered functional specifications.
+8. **Non-Functional Requirements (NFRs):**
+   - 8.1 Performance & Latency
+   - 8.2 Security & Compliance
+   - 8.3 Reliability & Availability
+   - 8.4 Usability & Accessibility
+9. **Detailed User Stories & Acceptance Criteria:** Gherkin-style acceptance criteria with Definition of Done.
+10. **Technical Architecture & Data Models:** TypeScript interfaces and REST API contracts.
+11. **Edge Cases & Error Handling Strategies:** Guard rails, race condition handling, and boundary behavior.
+12. **Success Metrics & Key Performance Indicators (KPIs):** Measurable business and technical targets.
+13. **Release Plan, Milestones & Rollout Strategy:** Phased sprint schedule and delivery gates.
+14. **Open Questions, Risks & Dependencies:** Architectural risks, mitigation plans, and resolved questions.
+
+---
+
+## Master Sprint Index
+
+| Sprint | PRD Document | Phase Focus | Key Deliverables |
+|---|---|---|---|
+| **Sprint 0** | [Sprint 0 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_0_Design_System_Core_UI_Atoms.md) | Design System & UI Atoms | CSS tokens, `DataTable<T>`, `FilterBar`, `Pagination`, `ConfirmDialog`, `SwitchRow` |
+| **Sprint 1** | [Sprint 1 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_1_App_Shell_Navigation_Reference_Data.md) | App Shell & Reference Data | 2-level sidebar, dynamic breadcrumbs, Favorites, Currencies, Locations, Sectors |
+| **Sprint 2** | [Sprint 2 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_2_Commercial_Catalogue_Pricing_Matrix.md) | Commercial Catalogue & Pricing | Products & Plans tree, 5-step Plan Editor, Multi-currency pricing matrix, Bundles |
+| **Sprint 3** | [Sprint 3 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_3_Customer_Management_Customer_360.md) | Customer Operations & 360 | Omni-search directory, health triage badges, 5-tab Customer 360, Onboarding wizard |
+| **Sprint 4** | [Sprint 4 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_4_Billing_Payments_Collections_Dunning.md) | Billing, Payments & Dunning | Real transaction states, attempt drawer, Collections queue, Dunning timeline builder |
+| **Sprint 5** | [Sprint 5 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_5_Growth_Pipeline_Leads_Partners.md) | Growth: Leads & Partners | Kanban lead board, Convert to Customer, Partner verification, Commission cards |
+| **Sprint 6** | [Sprint 6 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_6_Messaging_Campaigns_Trigger_Engine.md) | Messaging & Trigger Engine | Shared template library, 5-step Campaign builder, automated event notification triggers |
+| **Sprint 7** | [Sprint 7 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_7_Administration_RBAC_Keys_Audit_Logging.md) | RBAC, Keys & Audit Logging | User management, role diff modal, Merchant API keys, immutable audit trail & export |
+| **Sprint 8** | [Sprint 8 PRD](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/PRD/Sprint_8_Backend_Integration_QA_Production_Launch.md) | API Integration & Production Launch | Production REST client layer, Playwright E2E regression suite, legacy cutover |
+
+---
+
+## Interactive Visual Interfaces
+- **Sprint Roadmap (Next.js Application):** [localhost:3000/crm/roadmap](http://localhost:3000/crm/roadmap)
+- **Sprint Roadmap (Standalone HTML Dossier):** [localhost:3000/crm-sprints-roadmap.html](http://localhost:3000/crm-sprints-roadmap.html)
+- **Legacy Module Map:** [localhost:3000/crm-module-map.html](http://localhost:3000/crm-module-map.html)
+- **Approved Design System Style Guide:** [cicod_premium_styleguide.html](file:///c:/Users/CI-STAFF/Documents/CICOD%20TEST/Cicod%20Design%20Systems/cicod_premium_styleguide.html)

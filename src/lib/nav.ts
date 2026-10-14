@@ -1,7 +1,7 @@
 import type { ElementType } from "react";
 import {
   LayoutDashboard, Users, Layers, Target, Briefcase, MessageSquare, CreditCard, Settings, Funnel,
-  LayoutTemplate, Send, Contact, Plug, ShieldCheck,
+  LayoutTemplate, Send, Contact, Plug, ShieldCheck, CalendarRange, FlaskConical,
 } from "lucide-react";
 
 export type NavLeaf = { label: string; href: string };
@@ -93,14 +93,9 @@ export const NAV: NavSection[] = [
     groups: [
       {
         title: "Settings", icon: Settings, children: [
-          { label: "Overview", href: "/crm/settings" },
-          {
-            label: "Team & Access", children: [
-              { label: "Users", href: "/crm/settings/users" },
-              { label: "Roles & Permissions", href: "/crm/settings/roles" },
-              { label: "Audit Log", href: "/crm/settings/audit" },
-            ],
-          },
+          { label: "Users", href: "/crm/settings/users" },
+          { label: "Roles & Permissions", href: "/crm/settings/roles" },
+          { label: "Audit Log", href: "/crm/settings/audit" },
           { label: "My Profile", href: "/crm/settings/profile" },
           { label: "Reference Data", href: "/crm/settings/reference" },
           {
@@ -117,6 +112,21 @@ export const NAV: NavSection[] = [
             ],
           },
         ],
+      },
+    ],
+  },
+  {
+    caption: "Delivery & QA",
+    groups: [
+      {
+        title: "Sprint Roadmap & PRDs",
+        icon: CalendarRange,
+        href: "/crm/roadmap",
+      },
+      {
+        title: "QA Test Scenarios",
+        icon: FlaskConical,
+        href: "/crm/roadmap#testcases",
       },
     ],
   },

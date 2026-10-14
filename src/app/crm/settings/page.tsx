@@ -1,10 +1,5 @@
-import { Suspense } from 'react';
-import { SettingsHome } from "./components/SettingsHome";
+import { redirect } from 'next/navigation';
 
 export default function SettingsPage() {
-  return (
-    <Suspense>
-      <SettingsHome />
-    </Suspense>
-  );
+  redirect('/crm/settings/users');
 }

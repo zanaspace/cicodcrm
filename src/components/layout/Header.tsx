@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronRight, Moon, Map } from "lucide-react";
+import { Bell, ChevronRight, Moon, Map, CalendarRange, PanelLeft, FlaskConical } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, Suspense, useSyncExternalStore } from "react";
@@ -79,7 +79,13 @@ function useBreadcrumb(): Crumb[] {
   return crumbs;
 }
 
-export function Header() {
+export function Header({
+  isSidebarCollapsed,
+  toggleSidebar,
+}: {
+  isSidebarCollapsed?: boolean;
+  toggleSidebar?: () => void;
+} = {}) {
   const crumbs = useBreadcrumb();
   const isDark = useSyncExternalStore(
     subscribeTheme,
@@ -98,7 +104,18 @@ export function Header() {
     <header className="h-[70px] bg-[var(--background)] border-b border-[var(--border)] px-8 flex items-center justify-between sticky top-0 z-40 transition-colors">
 
       {/* Breadcrumbs, then the star that pins this page to Favorites */}
-      <div className="flex items-center gap-2 min-w-0">
+      <div className="flex items-center gap-3 min-w-0">
+        {toggleSidebar && (
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            aria-label={isSidebarCollapsed ? "Expand navigation sidebar" : "Collapse navigation sidebar"}
+            title={isSidebarCollapsed ? "Expand navigation sidebar" : "Collapse navigation sidebar"}
+            className="p-1.5 rounded-lg border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]/30 transition-colors shrink-0"
+          >
+            <PanelLeft className="w-4 h-4" />
+          </button>
+        )}
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[0.9rem] text-[var(--muted-foreground)] min-w-0">
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1;
@@ -122,7 +139,15 @@ export function Header() {
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3">
+
+        <Link href="/crm/roadmap#testcases" className="hidden sm:flex items-center gap-1.5 text-[0.85rem] font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30 px-3 py-1.5 rounded-md hover:bg-purple-600 hover:text-white transition-colors" title="QA Acceptance Test Cases & Use Cases">
+          <FlaskConical className="w-4 h-4 text-purple-500" /> Test Scenarios
+        </Link>
+
+        <Link href="/crm/roadmap" className="flex items-center gap-1.5 text-[0.85rem] font-semibold bg-[var(--secondary)] text-white px-3 py-1.5 rounded-md hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors">
+          <CalendarRange className="w-4 h-4 text-[var(--primary)]" /> Sprint Roadmap
+        </Link>
 
         <a href="/crm-module-map.html" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[0.85rem] font-semibold bg-[var(--primary)] text-white px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity">
           <Map className="w-4 h-4" /> Module Map
@@ -139,7 +164,7 @@ export function Header() {
             onClick={toggleTheme}
             className={`relative w-10 h-5 rounded-full cursor-pointer transition-colors flex items-center ${isDark ? "bg-[var(--primary)]" : "bg-[var(--input)]"}`}
           >
-            <div className={`absolute w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${isDark ? "translate-x-5" : "translate-x-1"}`} />
+            <div className={`absolute left-0 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${isDark ? "translate-x-5" : "translate-x-1"}`} />
           </button>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronRight, Moon, Map, PanelLeft } from "lucide-react";
+import { Bell, ChevronRight, Moon, Map } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, Suspense, useSyncExternalStore } from "react";
@@ -82,13 +82,7 @@ function useBreadcrumb(): Crumb[] {
   return crumbs;
 }
 
-export function Header({
-  isSidebarCollapsed,
-  toggleSidebar,
-}: {
-  isSidebarCollapsed?: boolean;
-  toggleSidebar?: () => void;
-} = {}) {
+export function Header() {
   const crumbs = useBreadcrumb();
   const isDark = useSyncExternalStore(
     subscribeTheme,
@@ -107,18 +101,7 @@ export function Header({
     <header className="h-[70px] bg-[var(--background)] border-b border-[var(--border)] px-8 flex items-center justify-between sticky top-0 z-40 transition-colors">
 
       {/* Breadcrumbs, then the star that pins this page to Favorites */}
-      <div className="flex items-center gap-3 min-w-0">
-        {toggleSidebar && (
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            aria-label={isSidebarCollapsed ? "Expand navigation sidebar" : "Collapse navigation sidebar"}
-            title={isSidebarCollapsed ? "Expand navigation sidebar" : "Collapse navigation sidebar"}
-            className="p-1.5 rounded-lg border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]/30 transition-colors shrink-0"
-          >
-            <PanelLeft className="w-4 h-4" />
-          </button>
-        )}
+      <div className="flex items-center gap-2 min-w-0">
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[0.9rem] text-[var(--muted-foreground)] min-w-0">
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1;

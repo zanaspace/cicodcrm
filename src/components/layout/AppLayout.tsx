@@ -52,7 +52,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           isCollapsed ? "ml-[72px]" : "ml-[260px]"
         }`}
       >
-        <Header isSidebarCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
+        <Header />
         <div className="flex-1 overflow-y-auto p-8">
           {isTransitioning ? (
             <div className="w-full h-[480px] skeleton rounded-xl opacity-80" />

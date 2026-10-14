@@ -105,12 +105,12 @@ export const NAV: NavSection[] = [
               { label: "Bundle Groups", href: "/crm/product-management/bundle-groups" },
             ],
           },
-          {
-            label: "Integrations", children: [
-              { label: "Merchant API Keys", href: "/crm/settings/api-keys" },
-              { label: "Notifications", href: "/crm/settings/notifications" },
-            ],
-          },
+        ],
+      },
+      {
+        title: "Integrations", icon: Plug, children: [
+          { label: "Merchant API Keys", href: "/crm/settings/api-keys" },
+          { label: "Notifications", href: "/crm/settings/notifications" },
         ],
       },
     ],

@@ -1,18 +1,16 @@
 "use client";
 
-import { Bell, ChevronRight, Moon, Map } from "lucide-react";
+import { Bell, ChevronRight, Menu, Moon, Map } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment, Suspense, useSyncExternalStore } from "react";
+import { Fragment, Suspense, useSyncExternalStore, type ReactNode } from "react";
 import { matchNav } from "@/lib/nav";
 import { FavoriteStar, FavoritesManager } from "./favorites";
 import { ProfileMenu } from "./ProfileMenu";
-import { useCustomers } from "@/lib/mock/customers";
-import { useBundles, usePlans } from "@/lib/mock/catalogue";
-import { usePolicies } from "@/lib/mock/billing";
-import { useCampaigns, useLeads, usePartners } from "@/lib/mock/growth";
-import { useStudioTemplates } from "@/lib/studio/templates";
-import { useStudioCampaigns } from "@/lib/studio/campaigns";
+import { useCustomerQuery } from "@/features/customers/queries";
+import { useBundlesQuery, usePlansQuery } from "@/features/catalogue/queries";
+import { usePoliciesQuery } from "@/features/billing/queries";
+import { useCampaignsQuery, useLeadQuery, usePartnerQuery } from "@/features/growth/queries";
 
 const THEME_EVENT = "crm-theme-change";
 
@@ -22,86 +20,79 @@ function subscribeTheme(cb: () => void) {
 }
 
 type Crumb = { label: string; href?: string };
+type RecordKind = "customer" | "plan" | "bundle" | "lead" | "campaign" | "partner" | "policy";
+/** A detail page's record, whose name is looked up (and shown as the last crumb) once its query has data. */
+type RecordRef = { kind: RecordKind; id: string; fallback: string };
 
-/** Breadcrumb from the nav config, plus the record name on detail pages. */
-function useBreadcrumb(): Crumb[] {
+/** Breadcrumb from the nav config, plus the record (if any) whose name ends the trail on detail pages. */
+function useBreadcrumb(): { crumbs: Crumb[]; record?: RecordRef } {
   const pathname = usePathname();
-  const customers = useCustomers();
-  const plans = usePlans();
-  const bundles = useBundles();
-  const policies = usePolicies();
-  const leads = useLeads();
-  const campaigns = useCampaigns();
-  const partners = usePartners();
-  const studioTemplates = useStudioTemplates();
-  const studioCampaigns = useStudioCampaigns();
   const crumbs: Crumb[] = [{ label: "Home", href: "/" }];
-  if (pathname === "/") return [{ label: "Home" }, { label: "Dashboard" }];
+  if (pathname === "/") return { crumbs: [{ label: "Home" }, { label: "Dashboard" }] };
   if (pathname === "/crm/roadmap" || pathname === "/roadmap") {
-    return [{ label: "Home", href: "/" }, { label: "Sprint Roadmap & PRDs" }];
+    return { crumbs: [{ label: "Home", href: "/" }, { label: "Sprint Roadmap & PRDs" }] };
   }
 
   const match = matchNav(pathname);
-  if (!match) return [...crumbs, { label: "Not found" }];
+  if (!match) return { crumbs: [...crumbs, { label: "Not found" }] };
   const leafLabel = match.leaf?.label ?? match.group.title;
   // Skip the group crumb when the leaf has the same name (Partners › Partners).
   if (match.leaf && match.group.title !== leafLabel) crumbs.push({ label: match.group.title });
-  // Single-link groups (Campaign Studio pages) show their sidebar section.
+  // Single-link groups outside Daily Operations show their sidebar section.
   if (!match.leaf && match.group.href && match.section !== "Daily Operations") crumbs.push({ label: match.section });
   if (match.folder) crumbs.push({ label: match.folder.label });
 
   const rest = pathname.slice(match.href.length).split("/").filter(Boolean);
-  if (rest.length === 0) return [...crumbs, { label: leafLabel }];
+  if (rest.length === 0) return { crumbs: [...crumbs, { label: leafLabel }] };
   crumbs.push({ label: leafLabel, href: match.href });
 
   // Detail / editor pages under a list.
   const [first, second] = rest;
-  if (match.href === "/crm/customer-mgt/customers") {
-    const c = customers.find((x) => x.cicod === first);
-    crumbs.push({ label: c ? c.company : `#${first}` });
-  } else if (first === "plans") {
-    crumbs.push({ label: second === "new" ? "New plan" : plans.find((p) => p.code === second)?.name ? `${plans.find((p) => p.code === second)!.name} (${second})` : second });
-  } else if (match.href === "/crm/catalogue/bundles") {
-    crumbs.push({ label: first === "new" ? "New bundle" : bundles.find((b) => b.code === first)?.name ?? first });
-  } else if (match.href === "/crm/growth/leads") {
-    crumbs.push({ label: leads.find((l) => l.id === first)?.company ?? first });
-  } else if (match.href === "/crm/growth/campaigns") {
-    crumbs.push({ label: first === "new" ? "New campaign" : campaigns.find((c) => c.id === first)?.name ?? first });
-  } else if (match.href === "/crm/growth/partners") {
-    crumbs.push({ label: partners.find((p) => p.id === first)?.name ?? first });
-  } else if (match.href === "/crm/studio/templates") {
-    crumbs.push({ label: studioTemplates.find((t) => t.id === first)?.name ?? first, href: second ? `/crm/studio/templates/${first}` : undefined });
-    if (second === "compare") crumbs.push({ label: "Compare versions" });
-  } else if (match.href === "/crm/studio/campaigns") {
-    crumbs.push({ label: studioCampaigns.find((c) => c.id === first)?.name ?? first });
-  } else if (match.href === "/crm/billing/dunning") {
-    crumbs.push({ label: first === "new" ? "New policy" : policies.find((p) => p.id === first)?.name ?? first });
-  } else {
-    crumbs.push({ label: decodeURIComponent(first) });
+  const id = decodeURIComponent(first);
+  const label = (text: string) => ({ crumbs: [...crumbs, { label: text }] });
+  const record = (kind: RecordKind, recordId: string, fallback = recordId) => ({ crumbs, record: { kind, id: recordId, fallback } });
+  if (match.href === "/crm/customer-mgt/customers") return record("customer", id, `#${id}`);
+  if (first === "plans") {
+    if (!second) return label(id);
+    return second === "new" ? label("New plan") : record("plan", decodeURIComponent(second));
   }
-  return crumbs;
+  if (match.href === "/crm/catalogue/bundles") return first === "new" ? label("New bundle") : record("bundle", id);
+  if (match.href === "/crm/growth/leads") return record("lead", id);
+  if (match.href === "/crm/growth/campaigns") return first === "new" ? label("New campaign") : record("campaign", id);
+  if (match.href === "/crm/growth/partners") return record("partner", id);
+  if (match.href === "/crm/billing/dunning") return first === "new" ? label("New policy") : record("policy", id);
+  return label(id);
 }
 
-export function Header() {
-  const crumbs = useBreadcrumb();
-  const isDark = useSyncExternalStore(
-    subscribeTheme,
-    () => document.documentElement.classList.contains("dark"),
-    () => false,
-  );
+/*
+ * Record names come from the same queries the detail pages use, so they share the cache. Only the hook for the
+ * current page's record runs; while it loads, or if it fails, the crumb shows the raw id.
+ */
+type NameProps = { id: string; fallback: string; children: (label: string) => ReactNode };
+const CustomerName = ({ id, fallback, children }: NameProps) => <>{children(useCustomerQuery(id).data?.company ?? fallback)}</>;
+const LeadName = ({ id, fallback, children }: NameProps) => <>{children(useLeadQuery(id).data?.company ?? fallback)}</>;
+const PartnerName = ({ id, fallback, children }: NameProps) => <>{children(usePartnerQuery(id).data?.name ?? fallback)}</>;
+function PlanName({ id, fallback, children }: NameProps) {
+  const name = usePlansQuery().data?.find((p) => p.code === id)?.name;
+  return <>{children(name ? `${name} (${id})` : fallback)}</>;
+}
+const BundleName = ({ id, fallback, children }: NameProps) => <>{children(useBundlesQuery().data?.find((b) => b.code === id)?.name ?? fallback)}</>;
+const CampaignName = ({ id, fallback, children }: NameProps) => <>{children(useCampaignsQuery().data?.find((c) => c.id === id)?.name ?? fallback)}</>;
+const PolicyName = ({ id, fallback, children }: NameProps) => <>{children(usePoliciesQuery().data?.find((p) => p.id === id)?.name ?? fallback)}</>;
+const RECORD_NAMES: Record<RecordKind, (p: NameProps) => ReactNode> = {
+  customer: CustomerName, plan: PlanName, bundle: BundleName, lead: LeadName, campaign: CampaignName, partner: PartnerName, policy: PolicyName,
+};
 
-  const toggleTheme = () => {
-    const next = !isDark;
-    document.documentElement.classList.toggle("dark", next);
-    try { localStorage.setItem("crm-theme", next ? "dark" : "light"); } catch {}
-    window.dispatchEvent(new Event(THEME_EVENT));
-  };
+function WithRecordName({ record, children }: { record?: RecordRef; children: (label?: string) => ReactNode }) {
+  if (!record) return <>{children()}</>;
+  const Name = RECORD_NAMES[record.kind];
+  return <Name id={record.id} fallback={record.fallback}>{(name) => children(name)}</Name>;
+}
 
+function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
+  const current = crumbs[crumbs.length - 1].label;
   return (
-    <header className="h-[70px] bg-[var(--background)] border-b border-[var(--border)] px-8 flex items-center justify-between sticky top-0 z-40 transition-colors">
-
-      {/* Breadcrumbs, then the star that pins this page to Favorites */}
-      <div className="flex items-center gap-2 min-w-0">
+    <>
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[0.9rem] text-[var(--muted-foreground)] min-w-0">
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1;
@@ -119,9 +110,37 @@ export function Header() {
           );
         })}
       </nav>
-      {crumbs[crumbs.length - 1].label !== "Not found" && (
-        <Suspense fallback={null}><FavoriteStar pageLabel={crumbs[crumbs.length - 1].label} /></Suspense>
+      {current !== "Not found" && (
+        <Suspense fallback={null}><FavoriteStar pageLabel={current} /></Suspense>
       )}
+    </>
+  );
+}
+
+export function Header({ onOpenMenu }: { onOpenMenu?: () => void } = {}) {
+  const { crumbs, record } = useBreadcrumb();
+  const isDark = useSyncExternalStore(
+    subscribeTheme,
+    () => document.documentElement.classList.contains("dark"),
+    () => false,
+  );
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem("crm-theme", next ? "dark" : "light"); } catch {}
+    window.dispatchEvent(new Event(THEME_EVENT));
+  };
+
+  return (
+    <header className="h-[70px] bg-[var(--background)] border-b border-[var(--border)] px-4 lg:px-8 gap-3 flex items-center justify-between sticky top-0 z-30 transition-colors">
+      <button type="button" onClick={onOpenMenu} aria-label="Open menu" className="lg:hidden p-2 -ml-2 rounded-md hover:bg-[var(--muted)] shrink-0"><Menu className="w-5 h-5" /></button>
+
+      {/* Breadcrumbs, then the star that pins this page to Favorites */}
+      <div className="flex items-center gap-2 min-w-0">
+      <WithRecordName key={record ? `${record.kind}:${record.id}` : "none"} record={record}>
+        {(name) => <Breadcrumbs crumbs={name === undefined ? crumbs : [...crumbs, { label: name }]} />}
+      </WithRecordName>
       </div>
 
       {/* Right Controls */}

@@ -6,6 +6,8 @@ import { COUNTRIES as SEED_COUNTRIES, SECTORS as SEED_SECTORS, customersStore, t
 import { bundlesStore, plansStore } from "@/lib/mock/catalogue";
 import { paymentsStore, type PaymentMethod } from "@/lib/mock/billing";
 import type { TemplateCategory } from "@/lib/mock/messaging";
+import { ROLE_SEED, USER_SEED, emailOf, type UserStatus } from "@/lib/mock/seed/staff";
+export type { UserStatus } from "@/lib/mock/seed/staff";
 
 const isoAgo = (days: number, h = 10, m = 0) => { const d = new Date(daysFromToday(-days)); d.setHours(h, m, 0, 0); return d.toISOString(); };
 /** Names compared without case, spaces or punctuation ("Broadcast Media (TV, Radio)" = "broadcast media tv radio"). */
@@ -34,36 +36,11 @@ export function audit(area: AuditArea, action: string, target: string, detail?: 
 
 /* ================= Roles and permissions ================= */
 
-export const MODULES = [
-  { id: "customers", label: "Customers", full: "Suspend and reactivate customers" },
-  { id: "catalogue", label: "Catalogue", full: "Publish, unpublish and archive plans and bundles" },
-  { id: "billing", label: "Billing & Payments", full: "Record payments, suspend for non-payment, publish dunning policies" },
-  { id: "pipeline", label: "Pipeline", full: "Convert leads, manage pipeline stages" },
-  { id: "marketing", label: "Marketing & Messaging", full: "Launch campaigns, edit shared templates" },
-  { id: "partners", label: "Partners", full: "Verify, reject and suspend partners; change commission" },
-  { id: "settings", label: "Settings", full: "Users, roles, reference data, API keys" },
-] as const;
-export type ModuleId = (typeof MODULES)[number]["id"];
-export type Access = "none" | "view" | "edit" | "full";
-export const ACCESS_LEVELS: { id: Access; label: string; hint: string }[] = [
-  { id: "none", label: "No access", hint: "Hidden from the menu" },
-  { id: "view", label: "View", hint: "See records, change nothing" },
-  { id: "edit", label: "Edit", hint: "Create and edit records" },
-  { id: "full", label: "Full", hint: "Edit, plus the risky actions" },
-];
+export { MODULES, ACCESS_LEVELS, type ModuleId, type Access } from "@/lib/permissions/model";
+import { MODULES, ACCESS_LEVELS, type ModuleId, type Access } from "@/lib/permissions/model";
 export type Role = { id: string; name: string; description: string; builtIn: boolean; locked?: boolean; access: Record<ModuleId, Access> };
 
-const acc = (c: Access, cat: Access, b: Access, p: Access, m: Access, pa: Access, s: Access): Record<ModuleId, Access> =>
-  ({ customers: c, catalogue: cat, billing: b, pipeline: p, marketing: m, partners: pa, settings: s });
-const ROLE_SEED: Role[] = [
-  { id: "admin", name: "Admin", description: "Everything, including users and API keys", builtIn: true, locked: true, access: acc("full", "full", "full", "full", "full", "full", "full") },
-  { id: "sales", name: "Sales", description: "Works leads and partners; sees customers and prices", builtIn: true, access: acc("edit", "view", "view", "full", "edit", "edit", "none") },
-  { id: "success", name: "Customer Success", description: "Onboards and supports customers", builtIn: true, access: acc("full", "view", "view", "view", "view", "view", "none") },
-  { id: "finance", name: "Finance", description: "Payments, collections, dunning and commission", builtIn: true, access: acc("view", "view", "full", "none", "none", "full", "none") },
-  { id: "developer", name: "Developer", description: "Merchant API keys and catalogue set-up", builtIn: true, access: acc("view", "edit", "view", "none", "none", "none", "edit") },
-  { id: "readonly", name: "Read-only", description: "Sees everything, changes nothing", builtIn: true, access: acc("view", "view", "view", "view", "view", "view", "view") },
-];
-export const rolesStore = createStore<Role[]>(ROLE_SEED);
+export const rolesStore = createStore<Role[]>(ROLE_SEED.map((r) => ({ ...r, access: { ...r.access } })));
 export const useRoles = () => useStore(rolesStore);
 export const roleName = (id: string) => rolesStore.get().find((r) => r.id === id)?.name ?? id;
 const levelLabel = (a: Access) => ACCESS_LEVELS.find((l) => l.id === a)!.label;
@@ -75,7 +52,7 @@ export function accessChanges(from: Record<ModuleId, Access>, to: Record<ModuleI
 export function saveRole(role: Role) {
   const before = rolesStore.get().find((r) => r.id === role.id);
   rolesStore.set((prev) => (before ? prev.map((r) => (r.id === role.id ? role : r)) : [...prev, role]));
-  if (!before) audit("Roles", "Created role", role.name, accessChanges(acc("none", "none", "none", "none", "none", "none", "none"), role.access).join("; ") || "No access anywhere");
+  if (!before) audit("Roles", "Created role", role.name, accessChanges(Object.fromEntries(MODULES.map((m) => [m.id, "none"])) as Record<ModuleId, Access>, role.access).join("; ") || "No access anywhere");
   else audit("Roles", "Edited role", role.name, [before.name !== role.name ? `Renamed from ${before.name}` : "", ...accessChanges(before.access, role.access)].filter(Boolean).join("; "));
 }
 export function deleteRole(id: string) {
@@ -86,7 +63,6 @@ export function deleteRole(id: string) {
 
 /* ================= Users ================= */
 
-export type UserStatus = "Active" | "Invited" | "Deactivated";
 export type User = {
   id: string; name: string; email: string; phone: string; roleId: string; status: UserStatus;
   createdAt: string; createdBy: string; lastActiveAt: string | null;
@@ -95,28 +71,6 @@ export type User = {
 export const STALE_DAYS = 90;
 export const DEACTIVATE_REASONS = ["Left the company", "Changed team, no longer needs access", "Account was shared", "Security concern", "Other"];
 
-type UserSeed = [string, string, string, UserStatus, number, number | null, string?];
-// name, role, phone (local part), status, created (days ago), last active (days ago), deactivation reason
-const USER_SEED: UserSeed[] = [
-  [CURRENT_USER, "admin", "8024019361", "Active", 2160, 0],
-  ["Isaac Adegunle", "sales", "8101767458", "Active", 2400, 0],
-  ["Tolu Animashaun", "sales", "8051344205", "Active", 2190, 1],
-  ["Ope Sangobowale", "success", "8024019362", "Active", 2190, 0],
-  ["Femi Adebayo", "developer", "8031127744", "Active", 1340, 3],
-  ["Chiamaka Obi", "finance", "8122450981", "Active", 610, 2],
-  ["Ngozi Eze", "success", "8099031275", "Active", 410, 6],
-  ["Bola Ajayi", "sales", "8162204519", "Active", 980, 141],
-  ["Musa Ibrahim", "success", "8034470021", "Active", 730, 96],
-  ["Kelechi Nnaji", "readonly", "9022318840", "Active", 300, 212],
-  ["Zainab Musa", "finance", "8187703350", "Invited", 12, null],
-  ["Emeka Okafor", "sales", "8066124478", "Invited", 3, null],
-  ["Kemi Balogun", "admin", "8023356611", "Deactivated", 1500, 40, "Left the company"],
-  ["Yusuf Bello", "admin", "8140098812", "Deactivated", 1800, 420, "Left the company"],
-  ["Funmi Alade", "sales", "8095521006", "Deactivated", 1200, 300, "Left the company"],
-  ["Daniel Etim", "developer", "8057781234", "Deactivated", 1010, 260, "Changed team, no longer needs access"],
-  ["Shared Admin", "admin", "8000000000", "Deactivated", 2550, 900, "Account was shared"],
-];
-const emailOf = (name: string) => `${name.toLowerCase().replace(/[^a-z ]/g, "").trim().replace(/\s+/g, ".")}@cicod.com`;
 export const usersStore = createStore<User[]>(USER_SEED.map(([name, roleId, phone, status, created, active, reason], i) => ({
   id: `u-${i + 1}`, name, email: emailOf(name), phone: `+234${phone}`, roleId, status,
   createdAt: daysFromToday(-created), createdBy: i < 4 ? "Shared Admin" : CURRENT_USER,

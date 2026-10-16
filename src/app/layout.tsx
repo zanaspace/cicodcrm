@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
-import { AppLayout } from "@/components/layout/AppLayout";
+import { Providers } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,8 +20,6 @@ export const metadata: Metadata = {
   description: "CICOD customer and catalogue management",
 };
 
-import { Toaster } from "@/components/ui/Toast";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,11 +32,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("crm-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}` }} />
       </head>
       <body className={`${inter.variable} ${sora.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}>
-        <Toaster />
-        <AppLayout>
-          {children}
-        </AppLayout>
-        
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

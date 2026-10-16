@@ -6,13 +6,17 @@ import { LogOut, Settings, Star, UserCircle } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
-import { roleName, useCurrentUser } from "@/lib/mock/settings";
+import { useLogout, useSessionUser } from "@/features/auth/hooks";
+import { usePermissions } from "@/lib/permissions";
 import { openFavoritesManager } from "@/lib/favorites";
 
 /** Avatar button with the account menu: profile, favorites, settings and log out. */
 export function ProfileMenu() {
   const router = useRouter();
-  const me = useCurrentUser();
+  const user = useSessionUser();
+  const logout = useLogout();
+  const { can } = usePermissions();
+  const me = user ?? { name: "", email: "", role: { id: "", name: "" } };
   const [open, setOpen] = React.useState(false);
   const box = React.useRef<HTMLDivElement>(null);
   const trigger = React.useRef<HTMLButtonElement>(null);
@@ -49,15 +53,15 @@ export function ProfileMenu() {
           <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--background)]">
             <div className="font-heading font-bold text-[0.92rem] truncate">{me.name}</div>
             <div className="text-[0.8rem] text-[var(--muted-foreground)] truncate">{me.email}</div>
-            <Badge variant="secondary" className="mt-2">{roleName(me.roleId)}</Badge>
+            <Badge variant="secondary" className="mt-2">{me.role.name}</Badge>
           </div>
           <div className="p-1.5 flex flex-col">
             <button role="menuitem" className={item} onClick={go(() => router.push("/crm/settings/profile"))}><UserCircle className="w-4 h-4 text-[var(--muted-foreground)]" /> My profile</button>
             <button role="menuitem" className={item} onClick={go(openFavoritesManager)}><Star className="w-4 h-4 text-[var(--muted-foreground)]" /> Manage favorites</button>
-            <button role="menuitem" className={item} onClick={go(() => router.push("/crm/settings/users"))}><Settings className="w-4 h-4 text-[var(--muted-foreground)]" /> Settings</button>
+            {can("settings") && <button role="menuitem" className={item} onClick={go(() => router.push("/crm/settings"))}><Settings className="w-4 h-4 text-[var(--muted-foreground)]" /> Settings</button>}
           </div>
           <div className="p-1.5 border-t border-[var(--border)]">
-            <button role="menuitem" className={cn(item, "text-[var(--destructive)] font-semibold")} onClick={go(() => router.push("/login?signedout=1"))}><LogOut className="w-4 h-4" /> Log out</button>
+            <button role="menuitem" className={cn(item, "text-[var(--destructive)] font-semibold")} onClick={go(() => logout.run())} disabled={logout.isPending}><LogOut className="w-4 h-4" /> {logout.isPending ? "Signing out…" : "Log out"}</button>
           </div>
         </div>
       )}

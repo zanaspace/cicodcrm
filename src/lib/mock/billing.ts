@@ -3,7 +3,7 @@
 import { createStore, useStore } from "@/lib/store";
 import { CURRENT_USER, daysFromToday, daysUntil, formatDate } from "@/lib/format";
 import { fillTemplate } from "@/lib/mock/messaging";
-import { INITIAL_BUNDLES, INITIAL_PLANS, type BillingModel, type CatalogueStatus, type Period } from "@/lib/mock/catalogue";
+import { INITIAL_BUNDLES, INITIAL_PLANS, type BillingModel, type Bundle, type CatalogueStatus, type Plan, type Period } from "@/lib/mock/catalogue";
 import {
   customersStore, logActivity, monthlyValue, subscriptionLabel, updateCustomer, type Customer,
 } from "@/lib/mock/customers";
@@ -102,13 +102,17 @@ export const usePayments = () => useStore(paymentsStore);
 
 export { templateById, type Template } from "@/lib/mock/messaging";
 
-export function renderTemplate(body: string, c: Customer | undefined, extra: { dueDate: string; suspendDate: string }) {
-  const sub = c ? subscriptionLabel(c.subscription) : undefined;
+/** Plans and bundles to resolve a customer's subscription against. Defaults to the sample catalogue. */
+export type CatalogueRef = { plans: Plan[]; bundles: Bundle[] };
+const SEED_CATALOGUE: CatalogueRef = { plans: INITIAL_PLANS, bundles: INITIAL_BUNDLES };
+
+export function renderTemplate(body: string, c: Customer | undefined, extra: { dueDate: string; suspendDate: string }, catalogue: CatalogueRef = SEED_CATALOGUE) {
+  const sub = c ? subscriptionLabel(c.subscription, catalogue.bundles, catalogue.plans) : undefined;
   return fillTemplate(body, {
     contactName: c?.contacts[0]?.name.split(" ")[0],
     company: c?.company,
     plan: sub ? `${sub.group} ${sub.name}` : undefined,
-    amount: c ? `₦${monthlyValue(c).toLocaleString()}` : undefined,
+    amount: c ? `₦${monthlyValue(c, catalogue.bundles, catalogue.plans).toLocaleString()}` : undefined,
     dueDate: extra.dueDate,
     suspendDate: extra.suspendDate,
     domain: c?.domain,
@@ -196,12 +200,12 @@ export type DunningState = {
   pause?: Pause;
 };
 
-export function billingModelOf(c: Customer): BillingModel | undefined {
-  return subscriptionLabel(c.subscription, INITIAL_BUNDLES, INITIAL_PLANS).item?.billingModel;
+export function billingModelOf(c: Customer, catalogue: CatalogueRef = SEED_CATALOGUE): BillingModel | undefined {
+  return subscriptionLabel(c.subscription, catalogue.bundles, catalogue.plans).item?.billingModel;
 }
 
-export const policyFor = (c: Customer, policies: DunningPolicy[]) => {
-  const model = billingModelOf(c);
+export const policyFor = (c: Customer, policies: DunningPolicy[], catalogue: CatalogueRef = SEED_CATALOGUE) => {
+  const model = billingModelOf(c, catalogue);
   return policies.find((p) => p.status === "Live" && model && p.billingModels.includes(model));
 };
 
@@ -209,7 +213,7 @@ export const policyFor = (c: Customer, policies: DunningPolicy[]) => {
  * Where a customer sits in the dunning cycle today. Returns undefined when they are not in it
  * (paid up, on trial, suspended, or due more than 7 days out).
  */
-export function getDunningState(c: Customer, policies: DunningPolicy[], pauses: Record<string, Pause>): DunningState | undefined {
+export function getDunningState(c: Customer, policies: DunningPolicy[], pauses: Record<string, Pause>, catalogue: CatalogueRef = SEED_CATALOGUE): DunningState | undefined {
   if (c.status === "Suspended" || (c.subscription.trialEndsAt && daysUntil(c.subscription.trialEndsAt) >= 0)) return undefined;
   const daysPastDue = -daysUntil(c.subscription.renewsAt);
   if (daysPastDue < -7) return undefined;
@@ -217,7 +221,7 @@ export function getDunningState(c: Customer, policies: DunningPolicy[], pauses: 
   const pause = pauses[c.cicod];
   if (pause && daysUntil(pause.until) >= 0) return { stage: "paused", daysPastDue, next: `Resumes ${formatDate(pause.until)}`, pause };
 
-  const policy = policyFor(c, policies);
+  const policy = policyFor(c, policies, catalogue);
   if (!policy) return { stage: "no_policy", daysPastDue, next: daysPastDue > 0 ? "Not being chased" : "No reminders will be sent" };
 
   const steps = [...policy.steps].sort((a, b) => a.offsetDays - b.offsetDays);

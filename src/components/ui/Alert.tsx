@@ -1,6 +1,7 @@
 import * as React from "react";
 import { AlertCircle, AlertTriangle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Alert as AlertPrimitive, AlertDescription, AlertTitle } from "@/components/ui/primitives/alert";
 
 /** Style guide §9 "Alerts & Callouts". */
 const TONES = {
@@ -18,16 +19,23 @@ interface AlertProps {
   className?: string;
 }
 
+/** Built on the shadcn/ui alert primitive; keeps the CRM callout layout (icon · text · actions). */
 export function Alert({ tone = "default", title, children, actions, className }: AlertProps) {
   const t = TONES[tone];
   return (
-    <div role={tone === "destructive" ? "alert" : "status"} className={cn("flex gap-4 p-5 rounded-[var(--radius)] border shadow-[0_4px_12px_rgba(0,0,0,0.02)]", t.box, className)}>
-      <t.Icon className={cn("w-5 h-5 shrink-0 mt-0.5", t.icon)} />
+    <AlertPrimitive
+      role={tone === "destructive" ? "alert" : "status"}
+      className={cn("flex w-auto items-stretch gap-4 p-5 rounded-[var(--radius)] border text-[length:inherit] shadow-[0_4px_12px_rgba(0,0,0,0.02)]", t.box, className)}
+    >
+      {/* Wrapped so the primitive's `[&>svg]` sizing/colour rules don't apply to the icon. */}
+      <span aria-hidden className="shrink-0 mt-0.5">
+        <t.Icon className={cn("w-5 h-5", t.icon)} />
+      </span>
       <div className="flex-1 min-w-0">
-        <div className={cn("font-heading font-bold text-[1rem] mb-1", t.title)}>{title}</div>
-        {children && <div className={cn("text-[0.9rem]", t.desc)}>{children}</div>}
+        <AlertTitle className={cn("min-h-0 line-clamp-none tracking-normal font-heading font-bold text-[1rem] mb-1", t.title)}>{title}</AlertTitle>
+        {children && <AlertDescription className={cn("block text-[0.9rem]", t.desc)}>{children}</AlertDescription>}
       </div>
       {actions && <div className="flex items-center gap-2 shrink-0 self-center">{actions}</div>}
-    </div>
+    </AlertPrimitive>
   );
 }

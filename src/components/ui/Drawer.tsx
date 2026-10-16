@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useId, useRef } from "react";
+import React from "react";
 import { X } from "lucide-react";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/primitives/sheet";
+import { isToastTarget } from "./Modal";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -12,57 +14,39 @@ interface DrawerProps {
   footer?: React.ReactNode;
 }
 
-/** Right-hand panel for details that should keep the list in view. Same keyboard behaviour as Modal. */
+/**
+ * Right-hand panel for details that should keep the list in view, on the shadcn/ui sheet primitive
+ * (Radix dialog): Esc and overlay click close it, focus is trapped inside and returns to the trigger.
+ */
 export function Drawer({ isOpen, onClose, title, subtitle, children, footer }: DrawerProps) {
-  const titleId = useId();
-  const panelRef = useRef<HTMLDivElement>(null);
-  const onCloseRef = useRef(onClose);
-
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    panelRef.current?.focus();
-    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") onCloseRef.current(); };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      previouslyFocused?.focus();
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
+  const panelRef = React.useRef<HTMLDivElement>(null);
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-black/40 modal-backdrop-enter" onClick={onClose} />
-      <div
+    <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <SheetContent
+        side="right"
+        showCloseButton={false}
+        {...(subtitle ? {} : { "aria-describedby": undefined })}
+        // Focus the panel itself (as before), not its first button.
         ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        className="relative w-full max-w-[520px] h-full bg-[var(--card)] border-l border-[var(--border)] shadow-2xl flex flex-col focus:outline-none drawer-enter"
+        onOpenAutoFocus={(e) => { e.preventDefault(); panelRef.current?.focus(); }}
+        onInteractOutside={(e) => { if (isToastTarget(e.target)) e.preventDefault(); }}
+        className="w-full max-w-[520px] sm:max-w-[520px] h-full gap-0 bg-[var(--card)] border-l border-[var(--border)] shadow-2xl flex flex-col focus:outline-none drawer-enter"
       >
         <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-[var(--border)]">
           <div className="min-w-0">
-            <h2 id={titleId} className="text-[1.1rem] font-heading font-bold text-[var(--foreground)] m-0">{title}</h2>
-            {subtitle && <div className="mt-1 text-[0.85rem] text-[var(--muted-foreground)]">{subtitle}</div>}
+            <SheetTitle className="text-[1.1rem] font-heading font-bold text-[var(--foreground)] m-0">{title}</SheetTitle>
+            {subtitle && <SheetDescription asChild className="mt-1 text-[0.85rem] text-[var(--muted-foreground)]"><div>{subtitle}</div></SheetDescription>}
           </div>
-          <button
-            onClick={onClose}
+          <SheetClose
             aria-label="Close panel"
-            className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-[var(--muted)] hover:bg-[var(--accent)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+            className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-[var(--muted)] hover:bg-[var(--accent)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--ring)]"
           >
             <X className="w-4 h-4" />
-          </button>
+          </SheetClose>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-6">{children}</div>
         {footer && <div className="px-6 py-4 border-t border-[var(--border)] bg-[var(--background)] flex justify-end gap-3">{footer}</div>}
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }

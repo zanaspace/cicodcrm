@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
 import { ChevronDown, PanelLeft, Folder } from "lucide-react";
-import { NAV, isFolder, matchNav, type NavGroup } from "@/lib/nav";
+import { NAV, isFolder, matchNav, navItemVisible, type NavGroup } from "@/lib/nav";
+import { usePermissions } from "@/lib/permissions";
+import { cn } from "@/lib/utils";
 import { FavoritesSection } from "./favorites";
 
 type NavItemProps = {
@@ -124,14 +126,26 @@ function NestedAccordion({ title, children, openByDefault = false }: { title: st
   );
 }
 
-export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean, toggleCollapse: () => void }) {
+/**
+ * Two-level navigation. Groups, folders and pages the user's role cannot open are not shown.
+ * From the lg breakpoint it is a fixed rail (260px / 72px); below it, a drawer opened from the header.
+ */
+export function Sidebar({ isCollapsed: collapsedPref, toggleCollapse, mobileOpen = false, onCloseMobile }: { isCollapsed: boolean; toggleCollapse: () => void; mobileOpen?: boolean; onCloseMobile?: () => void }) {
   const pathname = usePathname();
   const match = matchNav(pathname);
+  const { canOpen } = usePermissions();
+  const visible = (item: Parameters<typeof navItemVisible>[0]) => navItemVisible(item, canOpen);
+  // The drawer is always shown expanded.
+  const isCollapsed = mobileOpen ? false : collapsedPref;
 
   return (
-    <aside className={`bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] border-r border-[var(--sidebar-border)] flex flex-col h-screen fixed inset-y-0 left-0 z-50 transition-[width] duration-300 ease-in-out ${
-      isCollapsed ? "w-[72px]" : "w-[260px]"
-    }`}>
+    <>
+    {mobileOpen && <div className="lg:hidden fixed inset-0 z-40 bg-black/40" aria-hidden onClick={onCloseMobile} />}
+    <aside className={cn(
+      "bg-[var(--sidebar-background)] text-[var(--sidebar-foreground)] border-r border-[var(--sidebar-border)] flex flex-col h-screen fixed inset-y-0 left-0 z-50 transition-[width,transform] duration-300 ease-in-out",
+      isCollapsed ? "w-[72px]" : "w-[260px]",
+      mobileOpen ? "translate-x-0 shadow-xl" : "max-lg:-translate-x-full",
+    )}>
 
       {/* Brand Header */}
       <div className={`h-[70px] px-5 flex items-center ${isCollapsed ? 'justify-center px-0' : 'justify-between'} border-b border-[var(--sidebar-border)] overflow-hidden`}>
@@ -143,7 +157,7 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean,
             <img src="/images/cicod-crm-logo-dark.png" alt="CICOD CRM" className="logo-dark h-full w-auto object-contain" />
           </Link>
         )}
-        <button onClick={toggleCollapse} aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"} className="text-[var(--sidebar-foreground)] hover:text-[var(--sidebar-accent-foreground)] transition-colors p-1.5 rounded-md hover:bg-[var(--sidebar-accent)] shrink-0">
+        <button onClick={mobileOpen ? onCloseMobile : toggleCollapse} aria-label={mobileOpen ? "Close menu" : isCollapsed ? "Expand sidebar" : "Collapse sidebar"} className="text-[var(--sidebar-foreground)] hover:text-[var(--sidebar-accent-foreground)] transition-colors p-1.5 rounded-md hover:bg-[var(--sidebar-accent)] shrink-0">
           <PanelLeft className="w-5 h-5" />
         </button>
       </div>
@@ -151,7 +165,7 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean,
       {/* Navigation Links */}
       <nav aria-label="Main" className={`flex-1 overflow-y-auto ${isCollapsed ? 'p-2' : 'p-4'} custom-scrollbar`}>
         <Suspense fallback={null}><FavoritesSection isCollapsed={isCollapsed} /></Suspense>
-        {NAV.map((section, si) => (
+        {NAV.filter((section) => section.groups.some(visible)).map((section, si) => (
           <ul key={section.caption} className="flex flex-col gap-1">
             {!isCollapsed ? (
               <div className={`text-[0.75rem] text-[var(--sidebar-caption)] uppercase font-semibold tracking-wider px-3 pb-2 truncate ${si === 0 ? "pt-4" : "pt-5"}`}>{section.caption}</div>
@@ -159,7 +173,7 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean,
               <div className="h-0 border-b border-[var(--sidebar-border)] w-8 mx-auto my-4"></div>
             )}
 
-            {section.groups.map((group) =>
+            {section.groups.filter(visible).map((group) =>
               group.href ? (
                 <NavLinkItem key={group.title} group={group} active={match?.group === group && !match.leaf} isCollapsed={isCollapsed} />
               ) : (
@@ -171,10 +185,10 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean,
                   icon={group.icon}
                   defaultOpen={match?.group === group}
                 >
-                  {group.children!.map((child) =>
+                  {group.children!.filter(visible).map((child) =>
                     isFolder(child) ? (
                       <NestedAccordion key={child.label} title={child.label} openByDefault={match?.folder === child}>
-                        {child.children.map((leaf) => (
+                        {child.children.filter(visible).map((leaf) => (
                           <SubLink key={leaf.href} href={leaf.href} active={match?.leaf === leaf}>{leaf.label}</SubLink>
                         ))}
                       </NestedAccordion>
@@ -190,5 +204,6 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed: boolean,
       </nav>
 
     </aside>
+    </>
   );
 }

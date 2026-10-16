@@ -1,7 +1,7 @@
 import type { ElementType } from "react";
 import {
   LayoutDashboard, Users, Layers, Target, Briefcase, MessageSquare, CreditCard, Settings, Funnel,
-  LayoutTemplate, Send, Contact, Plug, ShieldCheck,
+  Plug,
 } from "lucide-react";
 
 export type NavLeaf = { label: string; href: string };
@@ -78,17 +78,6 @@ export const NAV: NavSection[] = [
     ],
   },
   {
-    // Campaign Studio, brought in from the CAMPAIGNStudioFE project for team review.
-    caption: "Campaign Studio",
-    groups: [
-      { title: "Template Library", icon: LayoutTemplate, href: "/crm/studio/templates" },
-      { title: "Campaigns", icon: Send, href: "/crm/studio/campaigns" },
-      { title: "Contacts", icon: Contact, href: "/crm/studio/contacts" },
-      { title: "Integrations", icon: Plug, href: "/crm/studio/integrations" },
-      { title: "Studio Admin", icon: ShieldCheck, href: "/crm/studio/admin" },
-    ],
-  },
-  {
     caption: "Administration",
     groups: [
       {
@@ -118,6 +107,13 @@ export const NAV: NavSection[] = [
 ];
 
 export const isFolder = (n: NavLeaf | NavFolder): n is NavFolder => "children" in n;
+
+/** Whether a nav item has at least one page the user may open (so empty groups and folders are hidden). */
+export function navItemVisible(item: NavGroup | NavLeaf | NavFolder, canOpen: (href: string) => boolean): boolean {
+  if ("href" in item && item.href) return canOpen(item.href);
+  const children = "children" in item ? item.children ?? [] : [];
+  return children.some((c) => navItemVisible(c, canOpen));
+}
 
 const covers = (href: string, pathname: string) =>
   href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");

@@ -1,14 +1,15 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import * as P from "@/components/ui/primitives/table"
 
+/**
+ * CRM tables on the shadcn/ui table primitive. Same exports and class hooks as before; the card frame
+ * (rounded border, card background) wraps the primitive's scroll container.
+ */
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
     <div className="relative w-full overflow-auto rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
-      <table
-        ref={ref}
-        className={cn("w-full caption-bottom text-sm", className)}
-        {...props}
-      />
+      <P.Table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   )
 )
@@ -16,28 +17,24 @@ Table.displayName = "Table"
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+    <P.TableHeader ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
   )
 )
 TableHeader.displayName = "TableHeader"
 
 const TableBody = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tbody
-      ref={ref}
-      className={cn("[&_tr:last-child]:border-0", className)}
-      {...props}
-    />
+    <P.TableBody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
   )
 )
 TableBody.displayName = "TableBody"
 
 const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
   ({ className, ...props }, ref) => (
-    <tr
+    <P.TableRow
       ref={ref}
       className={cn(
-        "border-b border-[var(--border)] transition-colors hover:bg-[var(--accent)] data-[state=selected]:bg-[var(--accent)]",
+        "border-b border-[var(--border)] transition-colors hover:bg-[var(--accent)] has-aria-expanded:bg-[var(--accent)] data-[state=selected]:bg-[var(--accent)]",
         className
       )}
       {...props}
@@ -48,10 +45,10 @@ TableRow.displayName = "TableRow"
 
 const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
-    <th
+    <P.TableHead
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-heading text-[0.75rem] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider bg-[var(--background)]",
+        "h-12 px-4 text-left align-middle whitespace-normal font-heading text-[0.75rem] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider bg-[var(--background)]",
         className
       )}
       {...props}
@@ -62,9 +59,9 @@ TableHead.displayName = "TableHead"
 
 const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
-    <td
+    <P.TableCell
       ref={ref}
-      className={cn("p-4 align-middle text-[0.92rem] text-[var(--foreground)]", className)}
+      className={cn("p-4 align-middle whitespace-normal text-[0.92rem] text-[var(--foreground)]", className)}
       {...props}
     />
   )

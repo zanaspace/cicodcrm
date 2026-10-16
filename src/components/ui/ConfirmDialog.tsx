@@ -5,6 +5,8 @@ import { Loader2 } from "lucide-react";
 import { Modal } from "./Modal";
 import { Button } from "./Button";
 import { Select } from "./Select";
+import { Textarea } from "@/components/ui/primitives/textarea";
+import { Label } from "@/components/ui/primitives/label";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -20,12 +22,22 @@ interface ConfirmDialogProps {
   /** When set, the user must pick a reason before confirming (kept in the activity log). */
   reasons?: string[];
   icon?: React.ReactNode;
+  /**
+   * The real request is in flight (e.g. `pending={mutation.isPending}`): the confirm button is disabled and
+   * shows the busy state, `onConfirm` is called straight away, and the caller closes the dialog in onSuccess.
+   * When omitted, the legacy behaviour is kept (a short simulated busy state before `onConfirm`).
+   */
+  pending?: boolean;
 }
 
-export function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, impact, confirmLabel, tone = "primary", reasons, icon }: ConfirmDialogProps) {
+export function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, impact, confirmLabel, tone = "primary", reasons, icon, pending }: ConfirmDialogProps) {
   const [reason, setReason] = React.useState("");
   const [note, setNote] = React.useState("");
-  const [busy, setBusy] = React.useState(false);
+  const [simulatedBusy, setSimulatedBusy] = React.useState(false);
+  const controlled = pending !== undefined;
+  const busy = controlled ? pending : simulatedBusy;
+  const descriptionId = React.useId();
+  const noteId = React.useId();
 
   const close = () => {
     if (busy) return;
@@ -34,12 +46,29 @@ export function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, 
     onClose();
   };
 
+  // Clear the reason/note whenever the dialog is closed, including when the caller closes it in onSuccess.
+  const [wasOpen, setWasOpen] = React.useState(isOpen);
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
+    if (!isOpen) {
+      setReason("");
+      setNote("");
+    }
+  }
+
   const confirm = () => {
-    setBusy(true);
-    // Short pause so the action feels deliberate; the prototype has no network.
+    if (busy) return;
+    const payload = reasons ? { reason, note } : undefined;
+    if (controlled) {
+      // Real request: the caller drives the busy state through `pending` and closes the dialog on success.
+      onConfirm(payload);
+      return;
+    }
+    // Legacy (no `pending` prop): short simulated busy state, as before.
+    setSimulatedBusy(true);
     setTimeout(() => {
-      onConfirm(reasons ? { reason, note } : undefined);
-      setBusy(false);
+      onConfirm(payload);
+      setSimulatedBusy(false);
       setReason("");
       setNote("");
     }, 500);
@@ -53,6 +82,7 @@ export function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, 
       onClose={close}
       title={title}
       maxWidth="max-w-md"
+      ariaDescribedBy={descriptionId}
       footer={
         <>
           <Button variant="outline" onClick={close} disabled={busy}>Cancel</Button>
@@ -68,7 +98,7 @@ export function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, 
             {icon}
           </div>
         )}
-        <div className="text-[0.9rem] text-[var(--muted-foreground)] leading-relaxed">{description}</div>
+        <div id={descriptionId} className="text-[0.9rem] text-[var(--muted-foreground)] leading-relaxed">{description}</div>
 
         {impact && impact.length > 0 && (
           <ul className="flex flex-col gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--background)] p-4 text-[0.85rem] text-[var(--foreground)]">
@@ -81,18 +111,18 @@ export function ConfirmDialog({ isOpen, onClose, onConfirm, title, description, 
         {reasons && (
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[0.85rem] font-bold text-[var(--foreground)]">Reason <span className="text-[var(--destructive)]">*</span></label>
-              <Select options={reasons} value={reason} onChange={setReason} placeholder="Select a reason" ariaLabel="Reason" />
+              <span aria-hidden className="text-[0.85rem] font-bold text-[var(--foreground)]">Reason <span className="text-[var(--destructive)]">*</span></span>
+              <Select options={reasons} value={reason} onChange={setReason} placeholder="Select a reason" ariaLabel="Reason (required)" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="confirm-note" className="text-[0.85rem] font-bold text-[var(--foreground)]">Note <span className="font-normal text-[var(--muted-foreground)]">(optional)</span></label>
-              <textarea
-                id="confirm-note"
+              <Label htmlFor={noteId} className="block leading-normal gap-0 text-[0.85rem] font-bold text-[var(--foreground)]">Note <span className="font-normal text-[var(--muted-foreground)]">(optional)</span></Label>
+              <Textarea
+                id={noteId}
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 rows={3}
                 placeholder="Visible in the customer's activity log"
-                className="w-full p-3 rounded-md border-[1.5px] border-[var(--input)] bg-[var(--background)] text-[0.9rem] focus:outline-none focus:border-[var(--ring)] resize-none"
+                className="block field-sizing-fixed min-h-0 w-full p-3 rounded-md border-[1.5px] border-[var(--input)] bg-[var(--background)] dark:bg-[var(--background)] shadow-none text-[0.9rem] md:text-[0.9rem] placeholder:text-[var(--muted-foreground)] focus-visible:ring-0 focus:outline-none focus:border-[var(--ring)] focus-visible:border-[var(--ring)] resize-none"
               />
             </div>
           </div>

@@ -14,7 +14,7 @@ interface PaginationProps {
   pageSizes?: number[];
 }
 
-/** Style guide §12: "Showing 1 to 10 of 97 results · Prev 1 2 3 … 10 Next". */
+/** Style guide §12: "Showing 1 to 10 of 97 results · Prev 1 2 3 … 10 Next". Buttons are the CRM Button (shadcn/ui button primitive); the page links sit in a `nav` landmark with `aria-current="page"` on the active page. */
 export function Pagination({ page, pageSize, total, onPageChange, onPageSizeChange, pageSizes = [10, 25, 50] }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const current = Math.min(page, totalPages);
@@ -30,7 +30,7 @@ export function Pagination({ page, pageSize, total, onPageChange, onPageSizeChan
   return (
     <div className="p-4 border-t border-[var(--border)] bg-[var(--card)] rounded-b-xl flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-4">
-        <span className="text-[0.85rem] text-[var(--muted-foreground)]">
+        <span aria-live="polite" className="text-[0.85rem] text-[var(--muted-foreground)]">
           {total === 0 ? "No results" : `Showing ${from} to ${to} of ${total.toLocaleString()} results`}
         </span>
         {onPageSizeChange && (
@@ -47,18 +47,19 @@ export function Pagination({ page, pageSize, total, onPageChange, onPageSizeChan
         )}
       </div>
       <nav aria-label="Pagination" className="flex items-center gap-1">
-        <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--muted-foreground)] font-medium" disabled={current === 1} onClick={() => onPageChange(current - 1)}>
-          <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+        <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--muted-foreground)] font-medium" aria-label="Previous page" disabled={current === 1} onClick={() => onPageChange(current - 1)}>
+          <ChevronLeft aria-hidden className="w-4 h-4 mr-1" /> Prev
         </Button>
         {pages.map((n, i) =>
           n === "..." ? (
-            <span key={`e${i}`} className="w-8 flex items-center justify-center text-[var(--muted-foreground)]">…</span>
+            <span key={`e${i}`} aria-hidden className="w-8 flex items-center justify-center text-[var(--muted-foreground)]">…</span>
           ) : (
             <Button
               key={n}
               variant={n === current ? "outline" : "ghost"}
               size="sm"
               aria-current={n === current ? "page" : undefined}
+              aria-label={`Page ${n}`}
               onClick={() => onPageChange(n)}
               className={n === current ? "h-8 w-8 p-0 border-[var(--border)] bg-[var(--card)] text-[var(--primary)] font-bold shadow-sm" : "h-8 w-8 p-0 text-[var(--foreground)] font-medium"}
             >
@@ -66,8 +67,8 @@ export function Pagination({ page, pageSize, total, onPageChange, onPageSizeChan
             </Button>
           ),
         )}
-        <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--foreground)] font-medium hover:text-[var(--primary)]" disabled={current === totalPages} onClick={() => onPageChange(current + 1)}>
-          Next <ChevronRight className="w-4 h-4 ml-1" />
+        <Button variant="ghost" size="sm" className="h-8 px-2 text-[var(--foreground)] font-medium hover:text-[var(--primary)]" aria-label="Next page" disabled={current === totalPages} onClick={() => onPageChange(current + 1)}>
+          Next <ChevronRight aria-hidden className="w-4 h-4 ml-1" />
         </Button>
       </nav>
     </div>
